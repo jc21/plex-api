@@ -2,7 +2,7 @@ Plex API for PHP
 ================================================
 
 This is a basic API wrapper for Plex. See the
-documentation for functionality.
+[documentation](docs/Documentation.md) for functionality.
 
 This doesn't use the Plex.tv API apart from
 signing in.

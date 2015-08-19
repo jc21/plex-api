@@ -1,0 +1,25 @@
+{
+    "name": "jc21/plex-api",
+    "description": "PHP Api for Plex",
+    "keywords": ["plex", "api", "media"],
+    "homepage": "https://github.com/jc21/plex-api",
+    "license": "BSD",
+    "authors": [
+        {
+            "name": "Jamie Curnow",
+            "email": "jc@jc21.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "victorjonsson/markdowndocs": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "jc21": "src"
+        }
+    }
+}

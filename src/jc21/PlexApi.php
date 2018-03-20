@@ -41,6 +41,13 @@ class PlexApi {
     protected $port = 32400;
 
     /**
+     * Use SSL communicating with Plex server
+     *
+     * @var int
+     */
+    protected $ssl = false;
+
+    /**
      * Your Plex.tv Username or Email
      *
      * @var string
@@ -117,10 +124,11 @@ class PlexApi {
      * @param string $host
      * @param int    $port
      */
-    public function __construct($host = '127.0.0.1', $port = 32400)
+    public function __construct($host = '127.0.0.1', $port = 32400, $ssl = false)
     {
         $this->host = $host;
         $this->port = (int) $port;
+        $this->ssl = (bool) $ssl;
     }
 
 
@@ -369,7 +377,8 @@ class PlexApi {
         if ($isLoginCall) {
             $fullUrl = $path;
         } else {
-            $fullUrl = 'http://' . $this->host . ':' . $this->port . $path;
+            $fullUrl = $this->ssl ? 'https://' : 'http://';
+            $fullUrl .= $this->host . ':' . $this->port . $path;
             if ($params && count($params)) {
                 $fullUrl .= '?' . http_build_query($params);
             }

@@ -224,6 +224,17 @@ class PlexApi {
         return $this->call('/library/sections');
     }
 
+    /**
+     * Get Library Section contents
+     *
+     * @param  int   $sectionKey  Obtained using getLibrarySections()
+     * @return array|bool
+     */
+    public function getLibrarySectionContents($sectionKey)
+    {
+        return $this->call('/library/sections/' . $sectionKey . '/all');
+    }
+
 
     /**
      * Refresh a Library Section.

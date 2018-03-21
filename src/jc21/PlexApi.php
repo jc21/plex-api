@@ -147,7 +147,7 @@ class PlexApi {
     }
 
     /**
-     * Tests credentials and returns the auth token
+     * Tests the set username and password and returns the auth token
      *
      * @return string
      */
@@ -157,7 +157,7 @@ class PlexApi {
         {
             return $this->token;
         }
-        return abort(401);
+        return false;
     }
 
     /**

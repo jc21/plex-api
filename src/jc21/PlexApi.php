@@ -146,6 +146,29 @@ class PlexApi {
         $this->password = $password;
     }
 
+    /**
+     * Tests credentials and returns the auth token
+     *
+     * @return string
+     */
+    public function getToken()
+    {
+        if($this->getBaseInfo() !== false)
+        {
+            return $this->token;
+        }
+        return abort(401);
+    }
+
+    /**
+     * Sets the token
+     *
+     * @return string
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
 
     /**
      * Get Plex Server basic info

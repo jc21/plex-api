@@ -309,6 +309,43 @@ class PlexApi {
         return $this->call('/search', ['query' => $query]);
     }
 
+    /**
+     * Analyze an item
+     *
+     * @param  int   $item
+     * @return bool
+     */
+    public function analyze($item)
+    {
+        return $this->call('/library/metadata/' . (int) $item . '/analyze', [], self::PUT);
+    }
+
+    /**
+     * Get Potential Metadata Matches for an item
+     *
+     * @param  int      $item
+     * @param  string   $agent
+     * @param  string   $language
+     * @return array
+     */
+    public function getMatches($item, $agent = 'com.plexapp.agents.imdb', $language = 'en')
+    {
+        return $this->call('/library/metadata/' . (int) $item . '/matches', ['manual' => 1, 'agent' => $agent, 'language' => $language], self::GET);
+    }
+
+    /**
+     * Set the Metadata Match for an item
+     *
+     * @param  int      $item
+     * @param  string   $name
+     * @param  string   $guid
+     * @return array
+     */
+    public function setMatch($item, $name, $guid)
+    {
+        return $this->call('/library/metadata/' . (int) $item . '/match', ['name' => $name, 'guid' => $guid], self::PUT);
+    }
+
 
     /**
      * Get Servers

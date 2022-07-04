@@ -25,7 +25,7 @@ use JsonSerializable;
  * @property bool $has64bitOffsets
  * @property string $videoProfile
  * @property string $title
- * @property int $size
+ * @property Size $size
  * @property string $path
  */
 class Media implements JsonSerializable
@@ -61,9 +61,7 @@ class Media implements JsonSerializable
      */
     public function __set(string $var, $val)
     {
-        if (isset($this->data[$var])) {
-            $this->data[$var] = $val;
-        }
+        $this->data[$var] = $val;
     }
 
     /**
@@ -83,7 +81,7 @@ class Media implements JsonSerializable
         }
 
         if (isset($library['Part'])) {
-            if (isset($library['Part']['size'])) {
+            if (isset($library['Part']['size']) && $library['Part']['size'] > 0) {
                 $me->size = new Size($library['Part']['size']);
             }
             if (isset($library['Part']['file'])) {

@@ -6,6 +6,7 @@ use DateTime;
 use JsonSerializable;
 
 use jc21\Item;
+use jc21\Media;
 use jc21\Util\Duration;
 
 /**
@@ -108,9 +109,7 @@ class Movie extends Item implements JsonSerializable
      */
     public function __set(string $var, $val)
     {
-        if (isset($this->data[$var])) {
-            $this->data[$var] = $val;
-        }
+        $this->data[$var] = $val;
     }
 
     /**
@@ -187,6 +186,26 @@ class Movie extends Item implements JsonSerializable
                 }
             }
             unset($me->data['Role']);
+        }
+
+        if (isset($library['Media'])) {
+            $media = Media::fromLibrary($library['Media']);
+            die(print_r($media->size, true));
+            $me->media = $media;
+            unset($me->data['Media']);
+        }
+
+        if (isset($library['Collection'])) {
+            $col = [];
+            if (count($library['Collection']) == 1) {
+                $col[] = $library['Collection']['tag'];
+            } else {
+                foreach ($library['Collection'] as $c) {
+                    $col[] = $c['tag'];
+                }
+            }
+            $me->collection = $col;
+            unset($me->data['Collection']);
         }
 
         unset($me->data['Country']);

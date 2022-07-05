@@ -39,6 +39,7 @@ use jc21\Util\Duration;
  * @property array $writer
  * @property array $country
  * @property array $role
+ * @property Media $media
  */
 class Movie extends Item implements JsonSerializable
 {
@@ -77,6 +78,7 @@ class Movie extends Item implements JsonSerializable
             'updatedAt' => null,
             'audienceRatingImage' => null,
             'primaryExtraKey' => null,
+            'media' => new Media(),
             'genre' => [],
             'director' => [],
             'writer' => [],
@@ -190,7 +192,6 @@ class Movie extends Item implements JsonSerializable
 
         if (isset($library['Media'])) {
             $media = Media::fromLibrary($library['Media']);
-            die(print_r($media->size, true));
             $me->media = $media;
             unset($me->data['Media']);
         }

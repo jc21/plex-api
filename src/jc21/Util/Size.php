@@ -31,7 +31,7 @@ class Size
      */
     public function GB()
     {
-        return (string) $this->size / 1024^3 . " gb";
+        return number_format($this->size / 1024 / 1024 / 1024, 3) . " gb";
     }
 
     /**
@@ -41,7 +41,7 @@ class Size
      */
     public function MB()
     {
-        return (string) $this->size / 1024^2 . " mb";
+        return number_format($this->size / 1024 / 1024, 3) . " mb";
     }
 
     /**
@@ -51,7 +51,7 @@ class Size
      */
     public function KB()
     {
-        return (string) $this->size / 1024 . " kb";
+        return number_format($this->size / 1024, 3) . " kb";
     }
 
     /**
@@ -61,6 +61,6 @@ class Size
      */
     public function bytes()
     {
-        return $this->size;
+        return number_format($this->size, 0);
     }
 }

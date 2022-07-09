@@ -17,11 +17,11 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.0",
-        "ext-curl": "*",
-        "symfony/dotenv": "6.2.x-dev"
+        "ext-curl": "*"
     },
     "require-dev": {
-        "victorjonsson/markdowndocs": "dev-master"
+        "victorjonsson/markdowndocs": "dev-master",
+        "symfony/dotenv": "6.2.x-dev"
     },
     "autoload": {
         "psr-0": {

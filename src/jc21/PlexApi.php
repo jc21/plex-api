@@ -5,6 +5,7 @@ namespace jc21;
 use jc21\Collections\ItemCollection;
 use jc21\Movies\Movie;
 use jc21\TV\Show;
+use jc21\Util\Item;
 
 /**
  * Plex API Class - Communicate with your Plex Media Server.
@@ -226,11 +227,15 @@ class PlexApi
      *
      * @param bool $returnCollection
      *
-     * @return ItemCollection|array
+     * @return ItemCollection|array|bool
      */
     public function getOnDeck(bool $returnCollection = false)
     {
         $results = $this->call('/library/onDeck');
+
+        if (is_bool($results)) {
+            return $results;
+        }
 
         $tag = 'Video';
         if (!isset($results[$tag]) && isset($results['Directory'])) {
@@ -257,11 +262,15 @@ class PlexApi
      * @param  int   $sectionKey  Obtained using getLibrarySections()
      * @param bool $returnCollection
      *
-     * @return ItemCollection|array
+     * @return ItemCollection|array|bool
      */
     public function getLibrarySectionContents($sectionKey, bool $returnCollection = false)
     {
         $results = $this->call('/library/sections/' . $sectionKey . '/all');
+
+        if (is_bool($results)) {
+            return $results;
+        }
 
         $tag = 'Video';
         if (!isset($results[$tag]) && isset($results['Directory'])) {
@@ -316,11 +325,15 @@ class PlexApi
      *
      * @param bool $returnCollection
      *
-     * @return ItemCollection|array
+     * @return ItemCollection|array|bool
      */
     public function getRecentlyAdded(bool $returnCollection = false)
     {
         $results = $this->call('/library/recentlyAdded');
+
+        if (is_bool($results)) {
+            return $results;
+        }
 
         $tag = 'Video';
         if (!isset($results[$tag]) && isset($results['Directory'])) {
@@ -349,11 +362,15 @@ class PlexApi
      * @param  string  $query
      * @param bool $returnCollection
      *
-     * @return ItemCollection|array
+     * @return ItemCollection|array|bool
      */
     public function search($query, bool $returnCollection = false)
     {
         $results = $this->call('/search', ['query' => $query]);
+
+        if (is_bool($results)) {
+            return $results;
+        }
 
         $tag = 'Video';
         if (!isset($results[$tag]) && isset($results['Directory'])) {
@@ -370,11 +387,15 @@ class PlexApi
      * @param array $filter
      * @param bool $returnCollection
      *
-     * @return ItemCollection|array
+     * @return ItemCollection|array|bool
      */
     public function filter(int $sectionKey, array $filter, bool $returnCollection = false)
     {
         $results = $this->call("/library/sections/{$sectionKey}/all", $filter);
+
+        if (is_bool($results)) {
+            return $results;
+        }
 
         $tag = 'Video';
         if (!isset($results[$tag]) && isset($results['Directory'])) {
@@ -618,7 +639,8 @@ class PlexApi
     private function buildHttpQuery(array $query): string
     {
         $ret = '';
-        if (isset($query[0]) && is_a($query[0], 'jc21\Filter')) {
+        $first = reset($query);
+        if (isset($first) && is_a($first, 'jc21\Util\Filter')) {
             foreach ($query as $q) {
                 $ret .= (string) $q."&";
             }
@@ -647,8 +669,12 @@ class PlexApi
      *
      * @return ItemCollection
      */
-    protected static function array2collection($array)
+    public static function array2collection($array)
     {
+        if (is_bool($array)) {
+            return $array;
+        }
+
         $ic = new ItemCollection();
         foreach ($array as $a) {
             if (!is_array($a) || !isset($a['type'])) {

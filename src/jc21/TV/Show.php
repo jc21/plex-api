@@ -4,10 +4,9 @@ namespace jc21\TV;
 
 use DateTime;
 use Exception;
-use jc21\Item;
-use jc21\PlexApi;
+use JsonSerializable;
+use jc21\Util\Item;
 use jc21\Util\Duration;
-use TypeError;
 
 /**
  * To represent a TV Show
@@ -40,8 +39,9 @@ use TypeError;
  * @property string $audienceRatingImage
  * @property array $genre
  * @property array $role
+ * @property array:Season $seasons
  */
-class Show extends Item
+class Show implements Item, JsonSerializable
 {
     /**
      * Class data
@@ -53,9 +53,47 @@ class Show extends Item
     /**
      * Array to store the seasons of this show
      *
-     * @var array
+     * @var array:Season
      */
     private array $seasons;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->data = [
+            'ratingKey' => null,
+            'key' => null,
+            'guid' => null,
+            'studio' => null,
+            'type' => null,
+            'title' => null,
+            'titleSort' => null,
+            'episodeSort' => null,
+            'contentRating' => null,
+            'summary' => null,
+            'index' => null,
+            'audienceRating' => null,
+            'viewCount' => null,
+            'skipCount' => null,
+            'lastViewedAt' => null,
+            'addedAt' => null,
+            'updatedAt' => null,
+            'year' => null,
+            'thumb' => null,
+            'art' => null,
+            'duration' => new Duration(0),
+            'originallyAvailableAt' => null,
+            'leafCount' => null,
+            'viewedLeafCount' => null,
+            'childCount' => null,
+            'audienceRatingImage' => null,
+            'genre' => [],
+            'role' => [],
+        ];
+        $this->seasons = [];
+    }
 
     /**
      * Magic getter method
@@ -84,6 +122,16 @@ class Show extends Item
     }
 
     /**
+     * Method to get the seasons
+     *
+     * @return array:Season
+     */
+    public function getSeasons(): array
+    {
+        return $this->seasons;
+    }
+
+    /**
      * Method to add a season to the show
      *
      * @param Season $s
@@ -101,29 +149,19 @@ class Show extends Item
     }
 
     /**
-     * Method to retrieve the shows seasons from the library
-     *
-     * @param PlexApi $client
-     */
-    public function populateSeasonsAndEpisodes(PlexApi &$client)
-    {
-        $episodes = $client->call($this->key);
-
-        if (isset($episodes['Video']) && is_array($episodes['Video']) && count($episodes['Video'])) {
-            foreach ($episodes['Video'] as $e) {
-            }
-        }
-    }
-
-    /**
      * Method to create an object from the library
      *
      * @param array $lib
      *
      * @return Show
+     *
+     * @throws Exception
      */
-    public static function fromLibrary(array $lib)
+    public static function fromLibrary(array $lib): Show
     {
+        if (!isset($GLOBALS['client'])) {
+            throw new Exception('PlexApi client `$client` not available');
+        }
         global $client;
 
         $me = new static();
@@ -218,5 +256,13 @@ class Show extends Item
         }
 
         return $me;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function jsonSerialize(): mixed
+    {
+        return $this->data;
     }
 }

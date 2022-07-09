@@ -4,6 +4,7 @@ namespace jc21;
 
 use DateTime;
 use JsonSerializable;
+use jc21\Util\Location;
 
 /**
  * Object to store section info
@@ -41,6 +42,37 @@ class Section implements JsonSerializable
     private array $data;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->data = [
+            'allowSync' => false,
+            'art' => null,
+            'composite' => null,
+            'filters' => false,
+            'refreshing' => false,
+            'thumb' => null,
+            'key' => null,
+            'libraryType' => null,
+            'type' => null,
+            'title' => null,
+            'agent' => null,
+            'scanner' => null,
+            'language' => null,
+            'uuid' => null,
+            'createdAt' => null,
+            'updatedAt' => null,
+            'scannedAt' => null,
+            'content' => null,
+            'directory' => null,
+            'contentChangedAt' => null,
+            'hidden' => false,
+            'location' => new Location(),
+        ];
+    }
+
+    /**
      * Magic getter method
      *
      * @param string $var
@@ -57,17 +89,35 @@ class Section implements JsonSerializable
     }
 
     /**
+     * Magic setter method
+     *
+     * @param string $var
+     * @param mixed $val
+     */
+    public function __set(string $var, $val)
+    {
+        $this->data[$var] = $val;
+    }
+
+    /**
      * Method to create an object from library data
      *
-     * @param array $section
+     * @param array $lib
      *
      * @return Section
      */
-    public static function fromLibrary($section): self
+    public static function fromLibrary(array $lib): self
     {
         $me = new static();
 
-        $me->data = $section;
+        $me->data = $lib;
+        $me->allowSync = (bool) $lib['allowSync'];
+        $me->hidden = (bool) $lib['hidden'];
+        $me->filters = (bool) $lib['filters'];
+        $me->refreshing = (bool) $lib['refreshing'];
+        $me->location = Location::fromLibrary($lib['Location']);
+
+        unset($me->data['Location']);
 
         $me->libraryType = 'public';
         if ($me->agent == PlexApi::PLEX_AGENT_NONE) {
@@ -75,15 +125,15 @@ class Section implements JsonSerializable
         }
 
         $createdAt = new DateTime();
-        $createdAt->setTimestamp($section['createdAt']);
+        $createdAt->setTimestamp($lib['createdAt']);
         $me->createdAt = $createdAt;
 
         $updatedAt = new DateTime();
-        $updatedAt->setTimestamp($section['updatedAt']);
+        $updatedAt->setTimestamp($lib['updatedAt']);
         $me->updatedAt = $updatedAt;
         
         $scannedAt = new DateTime();
-        $scannedAt->setTimestamp($section['scannedAt']);
+        $scannedAt->setTimestamp($lib['scannedAt']);
         $me->scannedAt = $scannedAt;
 
         return $me;

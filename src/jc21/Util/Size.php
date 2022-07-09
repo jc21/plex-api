@@ -61,6 +61,6 @@ class Size
      */
     public function bytes()
     {
-        return number_format($this->size, 0);
+        return $this->size;
     }
 }

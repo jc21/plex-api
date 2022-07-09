@@ -5,8 +5,8 @@ namespace jc21\Movies;
 use DateTime;
 use JsonSerializable;
 
-use jc21\Item;
-use jc21\Media;
+use jc21\Util\Item;
+use jc21\Util\Media;
 use jc21\Util\Duration;
 
 /**
@@ -28,7 +28,7 @@ use jc21\Util\Duration;
  * @property string $tagline
  * @property string $thumb
  * @property string $art
- * @property int $duration
+ * @property Duration $duration
  * @property DateTime $originallyAvailableAt
  * @property DateTime $addedAt
  * @property DateTime $updatedAt
@@ -41,7 +41,7 @@ use jc21\Util\Duration;
  * @property array $role
  * @property Media $media
  */
-class Movie extends Item implements JsonSerializable
+class Movie implements JsonSerializable, Item
 {
     /**
      * Class data

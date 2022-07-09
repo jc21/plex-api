@@ -3,8 +3,9 @@
 namespace jc21\TV;
 
 use DateTime;
-use jc21\Media;
+use jc21\Util\Media;
 use jc21\Util\Duration;
+use JsonSerializable;
 
 /**
  * Class to store episode data
@@ -41,7 +42,7 @@ use jc21\Util\Duration;
  * @property DateTime $updatedAt
  * @property Media $media
  */
-class Episode
+class Episode implements JsonSerializable
 {
     /**
      * Class data
@@ -49,6 +50,46 @@ class Episode
      * @var array
      */
     private array $data;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->data = [
+            'ratingKey' => null,
+            'parentRatingKey' => null,
+            'grandparentRatingKey' => null,
+            'key' => null,
+            'parentKey' => null,
+            'grandparentKey' => null,
+            'guid' => null,
+            'parentGuid' => null,
+            'grandparentGuid' => null,
+            'type' => null,
+            'title' => null,
+            'parentTitle' => null,
+            'grandparentTitle' => null,
+            'contentRating' => null,
+            'summary' => null,
+            'index' => null,
+            'parentIndex' => null,
+            'audienceRating' => null,
+            'audienceRatingImage' => null,
+            'viewCount' => null,
+            'lastViewedAt' => null,
+            'thumb' => null,
+            'parentThumb' => null,
+            'grandparentThumb' => null,
+            'art' => null,
+            'grandparentArt' => null,
+            'duration' => new Duration(0),
+            'originallyAvailableAt' => null,
+            'addedAt' => null,
+            'updatedAt' => null,
+            'media' => new Media(),
+        ];
+    }
 
     /**
      * Magic getter method
@@ -154,5 +195,13 @@ class Episode
         unset($me->data['Media']);
 
         return $me;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function jsonSerialize(): mixed
+    {
+        return $this->data;
     }
 }

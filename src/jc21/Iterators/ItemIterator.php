@@ -4,7 +4,7 @@ namespace jc21\Iterators;
 
 use Iterator;
 use jc21\Collections\ItemCollection;
-use jc21\Item;
+use jc21\Util\Item;
 
 /**
  * Iterator for the ItemCollection
@@ -58,7 +58,7 @@ class ItemIterator implements Iterator
     /**
      * Method to increment the iterator
      */
-    public function next()
+    public function next(): void
     {
         $this->position++;
     }
@@ -66,7 +66,7 @@ class ItemIterator implements Iterator
     /**
      * Method to rewind the iterator
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
@@ -76,7 +76,7 @@ class ItemIterator implements Iterator
      *
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return !is_null($this->collection->getData($this->position));
     }

@@ -25,6 +25,26 @@ class Duration implements JsonSerializable
     }
 
     /**
+     * The duration represented in mins
+     *
+     * @return string
+     */
+    public function minutes(): string
+    {
+        return gmdate("i", (int)$this->duration / 1000);
+    }
+
+    /**
+     * The duration represented in seconds
+     *
+     * @return string
+     */
+    public function seconds(): string
+    {
+        return (string)($this->duration / 1000);
+    }
+
+    /**
      * Method to convert the duration to seconds
      *
      * @return string
@@ -41,6 +61,6 @@ class Duration implements JsonSerializable
      */
     public function jsonSerialize(): mixed
     {
-        return (string) $this;
+        return (string) $this->duration;
     }
 }

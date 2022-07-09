@@ -4,6 +4,7 @@ namespace jc21\TV;
 
 use DateTime;
 use jc21\PlexApi;
+use JsonSerializable;
 use TypeError;
 
 /**
@@ -30,8 +31,9 @@ use TypeError;
  * @property int $viewedLeafCount
  * @property DateTime $addedAt
  * @property DateTime $updatedAt
+ * @property array:Episode $episodes
  */
-class Season
+class Season implements JsonSerializable
 {
     /**
      * Class data
@@ -43,9 +45,40 @@ class Season
     /**
      * Array to store episodes of a show in a season
      *
-     * @var array
+     * @var array:Episode
      */
     private array $episodes;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->data = [
+            'ratingKey' => null,
+            'key' => null,
+            'parentRatingKey' => null,
+            'guid' => null,
+            'parentGuid' => null,
+            'parentStudio' => null,
+            'type' => null,
+            'title' => null,
+            'parentKey' => null,
+            'parentTitle' => null,
+            'summary' => null,
+            'index' => null,
+            'parentYear' => null,
+            'thumb' => null,
+            'art' => null,
+            'parentThumb' => null,
+            'parentTheme' => null,
+            'leafCount' => null,
+            'viewedLeafCount' => null,
+            'addedAt' => null,
+            'updatedAt' => null,
+        ];
+        $this->episodes = [];
+    }
 
     /**
      * Magic getter method
@@ -71,6 +104,16 @@ class Season
     public function __set(string $var, $val)
     {
         $this->data[$var] = $val;
+    }
+
+    /**
+     * Method to return the episodes
+     *
+     * @return array
+     */
+    public function getEpisodes(): array
+    {
+        return $this->episodes;
     }
 
     /**
@@ -120,5 +163,13 @@ class Season
         }
 
         return $me;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function jsonSerialize(): mixed
+    {
+        return $this->data;
     }
 }

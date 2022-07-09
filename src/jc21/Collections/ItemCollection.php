@@ -2,8 +2,9 @@
 
 namespace jc21\Collections;
 
+use Iterator;
 use IteratorAggregate;
-use jc21\Item;
+use jc21\Util\Item;
 use jc21\Movies\Movie;
 use jc21\TV\Show;
 use jc21\Iterators\ItemIterator;
@@ -69,7 +70,7 @@ class ItemCollection implements IteratorAggregate
      *
      * {@inheritDoc}
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return new ItemIterator($this);
     }

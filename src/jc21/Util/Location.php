@@ -1,6 +1,6 @@
 <?php
 
-namespace jc21;
+namespace jc21\Util;
 
 use JsonSerializable;
 
@@ -55,6 +55,6 @@ class Location implements JsonSerializable
      */
     public function jsonSerialize(): mixed
     {
-        return [];
+        return $this->data;
     }
 }

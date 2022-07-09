@@ -1,16 +1,16 @@
 <?php
 
-namespace jc21;
+namespace jc21\Util;
 
+use JsonSerializable;
 use jc21\Util\Duration;
 use jc21\Util\Size;
-use JsonSerializable;
 
 /**
  * Class to store media info
  *
  * @property int $id
- * @property int $duration
+ * @property Duration $duration
  * @property int $bitrate
  * @property int $width
  * @property int $height

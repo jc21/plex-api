@@ -38,4 +38,3 @@ $client->setAuth('username', 'password');
 $result = $client->getOnDeck();
 print_r($result);
 ```
-

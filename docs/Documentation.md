@@ -56,11 +56,11 @@ $client->setToken($token);
 $sections = $client->getLibrarySections();
 ```
 
-If you know which library section contains the data content you want (e.g. all your public movies), you can tell it to give it to you in a 
+If you know which library section contains the data content you want (e.g. all your public movies).  The following will return an `ItemCollection` of all items in library section 1.  I can then loop through that collection to output each item in JSON.
 
 ```php
 $client = new jc21\PlexApi('{Plex server IP}');
-$movieLibrary = $client->getLibrarySectionContent({Library Section Key}, true);
+$movieLibrary = $client->getLibrarySectionContents(1, true);
 foreach($movieLibrary as $movie) {
     print json_encode($movie).PHP_EOL;
 }

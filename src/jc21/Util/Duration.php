@@ -17,7 +17,7 @@ class Duration implements JsonSerializable
     /**
      * Constructor
      *
-     * @param int $duration
+     * @param int $duration (in milliseconds)
      */
     public function __construct(int $duration)
     {
@@ -31,7 +31,9 @@ class Duration implements JsonSerializable
      */
     public function minutes(): string
     {
-        return gmdate("i", (int)$this->duration / 1000);
+        $min = gmdate("i", (int)$this->duration / 1000);
+        $hr = gmdate("H", (int)$this->duration / 1000);
+        return (($hr * 60)+$min);
     }
 
     /**

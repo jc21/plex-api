@@ -676,6 +676,10 @@ class PlexApi
         }
 
         $ic = new ItemCollection();
+        if (!isset($array[0])) {
+            $array[0] = $array;
+        }
+        
         foreach ($array as $a) {
             if (!is_array($a) || !isset($a['type'])) {
                 continue;

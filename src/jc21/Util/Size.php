@@ -17,7 +17,7 @@ class Size
     /**
      * Constructor
      *
-     * @param int $size
+     * @param int $size (in bytes)
      */
     public function __construct(int $size)
     {
@@ -31,7 +31,7 @@ class Size
      */
     public function GB()
     {
-        return number_format($this->size / 1024 / 1024 / 1024, 3) . " gb";
+        return number_format($this->size / 1024 / 1024 / 1024, 3);
     }
 
     /**
@@ -41,7 +41,7 @@ class Size
      */
     public function MB()
     {
-        return number_format($this->size / 1024 / 1024, 3) . " mb";
+        return number_format($this->size / 1024 / 1024, 3);
     }
 
     /**
@@ -51,7 +51,7 @@ class Size
      */
     public function KB()
     {
-        return number_format($this->size / 1024, 3) . " kb";
+        return number_format($this->size / 1024, 3);
     }
 
     /**

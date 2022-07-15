@@ -42,3 +42,14 @@ The object to represent a movie
 | public | <strong>__get(</strong><em>string</em> <strong>$var)</strong>: <em>mixed</em><br />Magic getter |
 | public | <strong>__set(</strong><em>string</em> <strong>$var</strong>, <em>mixed</em> <strong>$val)</strong>: <em>void</em><br />Magic setter |
 | public static | <strong>fromLibrary(</strong><em>array</em> <strong>$library)</strong>: <em>Movie</em><br />Create a movie from the Plex API call return |
+
+## Examples
+
+Simple example which can be duplicated by just passing in `true` as the second parameter to the `getLibrarySectionContents` method.  
+
+```php
+$res = $api->getLibrarySectionContents(1);
+foreach($res['Video'] as $m) {
+    $movie = Movie::fromLibrary($m);
+}
+```

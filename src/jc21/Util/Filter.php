@@ -43,7 +43,7 @@ class Filter
             throw new Exception("Invalid filter operator");
         }
 
-        if (!in_array($field, ['title', 'rating', 'contentRating', 'year', 'type', 'studio'])) {
+        if (!in_array($field, ['title', 'rating', 'contentRating', 'year', 'studio'])) {
             throw new Exception("Invalid filter field");
         }
 
@@ -59,6 +59,7 @@ class Filter
      */
     public function __toString()
     {
-        return "{$this->field}{$this->operator}{$this->value}";
+        $val = urlencode($this->value);
+        return "{$this->field}{$this->operator}{$val}";
     }
 }

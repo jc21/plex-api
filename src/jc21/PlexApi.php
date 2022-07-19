@@ -2,12 +2,17 @@
 
 namespace jc21;
 
+use jc21\Collections\ItemCollection;
+use jc21\Movies\Movie;
+use jc21\TV\Show;
+use jc21\Util\Item;
+
 /**
  * Plex API Class - Communicate with your Plex Media Server.
  *
  * @license BSD
  * @author  Jamie Curnow  <jc@jc21.com>
- * @version 1.0
+ * @version 1.3
  *
  * @example
  * <code>
@@ -19,12 +24,27 @@ namespace jc21;
  *
  */
 
-class PlexApi {
+class PlexApi
+{
+    public const VERSION = '1.3';
 
     const GET    = 'GET';
     const POST   = 'POST';
     const PUT    = 'PUT';
     const DELETE = 'DELETE';
+
+    // Plex agents
+    public const PLEX_AGENT_NONE = 'com.plexapp.agents.none';
+    public const PLEX_MOVIE_AGENT = 'tv.plex.agents.movie';
+    public const PLEX_TV_AGENT = 'tv.plex.agents.series';
+    public const PLEX_MUSIC_AGENT = 'tv.plex.agents.music';
+
+    // Plex scanners
+    public const PLEX_MOVIE_SCANNER = 'Plex Movie';
+    public const PLEX_TV_SCANNER = 'Plex TV Series';
+    public const PLEX_MUSIC_SCANNER = 'Plex Music';
+    public const PLEX_PHOTO_SCANNER = 'Plex Photo Scanner';
+    public const PLEX_VIDEO_SCANNER = 'Plex Video Files Scanner';
 
     /**
      * The hostname/ip of the Plex server
@@ -153,8 +173,7 @@ class PlexApi {
      */
     public function getToken()
     {
-        if($this->getBaseInfo() !== false)
-        {
+        if ($this->getBaseInfo() !== false) {
             return $this->token;
         }
         return false;
@@ -206,11 +225,24 @@ class PlexApi {
     /**
      * Get On Deck Info
      *
-     * @return array|bool
+     * @param bool $returnCollection
+     *
+     * @return ItemCollection|array|bool
      */
-    public function getOnDeck()
+    public function getOnDeck(bool $returnCollection = false)
     {
-        return $this->call('/library/onDeck');
+        $results = $this->call('/library/onDeck');
+
+        if (is_bool($results)) {
+            return $results;
+        }
+
+        $tag = 'Video';
+        if (!isset($results[$tag]) && isset($results['Directory'])) {
+            $tag = 'Directory';
+        }
+
+        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
     }
 
 
@@ -228,11 +260,24 @@ class PlexApi {
      * Get Library Section contents
      *
      * @param  int   $sectionKey  Obtained using getLibrarySections()
-     * @return array|bool
+     * @param bool $returnCollection
+     *
+     * @return ItemCollection|array|bool
      */
-    public function getLibrarySectionContents($sectionKey)
+    public function getLibrarySectionContents($sectionKey, bool $returnCollection = false)
     {
-        return $this->call('/library/sections/' . $sectionKey . '/all');
+        $results = $this->call('/library/sections/' . $sectionKey . '/all');
+
+        if (is_bool($results)) {
+            return $results;
+        }
+
+        $tag = 'Video';
+        if (!isset($results[$tag]) && isset($results['Directory'])) {
+            $tag = 'Directory';
+        }
+
+        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
     }
 
 
@@ -278,11 +323,24 @@ class PlexApi {
     /**
      * Get Recently Added
      *
-     * @return array|bool
+     * @param bool $returnCollection
+     *
+     * @return ItemCollection|array|bool
      */
-    public function getRecentlyAdded()
+    public function getRecentlyAdded(bool $returnCollection = false)
     {
-        return $this->call('/library/recentlyAdded');
+        $results = $this->call('/library/recentlyAdded');
+
+        if (is_bool($results)) {
+            return $results;
+        }
+
+        $tag = 'Video';
+        if (!isset($results[$tag]) && isset($results['Directory'])) {
+            $tag = 'Directory';
+        }
+
+        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
     }
 
 
@@ -302,11 +360,49 @@ class PlexApi {
      * Search for Items
      *
      * @param  string  $query
-     * @return array|bool
+     * @param bool $returnCollection
+     *
+     * @return ItemCollection|array|bool
      */
-    public function search($query)
+    public function search($query, bool $returnCollection = false)
     {
-        return $this->call('/search', ['query' => $query]);
+        $results = $this->call('/search', ['query' => $query]);
+
+        if (is_bool($results)) {
+            return $results;
+        }
+
+        $tag = 'Video';
+        if (!isset($results[$tag]) && isset($results['Directory'])) {
+            $tag = 'Directory';
+        }
+
+        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+    }
+
+    /**
+     * Method to filter a library
+     *
+     * @param int $sectionKey
+     * @param array $filter
+     * @param bool $returnCollection
+     *
+     * @return ItemCollection|array|bool
+     */
+    public function filter(int $sectionKey, array $filter, bool $returnCollection = false)
+    {
+        $results = $this->call("/library/sections/{$sectionKey}/all", $filter);
+
+        if (is_bool($results)) {
+            return $results;
+        }
+
+        $tag = 'Video';
+        if (!isset($results[$tag]) && isset($results['Directory'])) {
+            $tag = 'Directory';
+        }
+
+        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
     }
 
     /**
@@ -330,7 +426,11 @@ class PlexApi {
      */
     public function getMatches($item, $agent = 'com.plexapp.agents.imdb', $language = 'en')
     {
-        return $this->call('/library/metadata/' . (int) $item . '/matches', ['manual' => 1, 'agent' => $agent, 'language' => $language], self::GET);
+        return $this->call('/library/metadata/' . (int) $item . '/matches', [
+            'manual' => 1,
+            'agent' => $agent,
+            'language' => $language
+        ], self::GET);
     }
 
     /**
@@ -343,7 +443,10 @@ class PlexApi {
      */
     public function setMatch($item, $name, $guid)
     {
-        return $this->call('/library/metadata/' . (int) $item . '/match', ['name' => $name, 'guid' => $guid], self::PUT);
+        return $this->call('/library/metadata/' . (int) $item . '/match', [
+            'name' => $name,
+            'guid' => $guid
+        ], self::PUT);
     }
 
 
@@ -439,7 +542,7 @@ class PlexApi {
      * @return array|bool
      * @throws \Exception
      */
-    protected function call($path, $params = [], $method = self::GET, $isLoginCall = false)
+    public function call($path, $params = [], $method = self::GET, $isLoginCall = false)
     {
         if (!$this->token && !$isLoginCall) {
             $this->call('https://plex.tv/users/sign_in.xml', [], self::POST, true);
@@ -451,7 +554,7 @@ class PlexApi {
             $fullUrl = $this->ssl ? 'https://' : 'http://';
             $fullUrl .= $this->host . ':' . $this->port . $path;
             if ($params && count($params)) {
-                $fullUrl .= '?' . http_build_query($params);
+                $fullUrl .= '?' . $this->buildHttpQuery($params);
             }
         }
 
@@ -467,11 +570,11 @@ class PlexApi {
             CURLOPT_HTTPHEADER     => [
                 'X-Plex-Client-Identifier: ' . $this->clientIdentifier,
                 'X-Plex-Product: ' . $this->productName,
-                'X-Plex-Version: 1.0',
+                'X-Plex-Version: ' . self::VERSION,
                 'X-Plex-Device: ' . $this->device,
                 'X-Plex-Device-Name: ' . $this->deviceName,
                 'X-Plex-Platform: Linux',
-                'X-Plex-Platform-Version: 1.0',
+                'X-Plex-Platform-Version: ' . self::VERSION,
                 'X-Plex-Provides: controller',
                 'X-Plex-Username: ' . $this->username,
             ],
@@ -486,7 +589,7 @@ class PlexApi {
 
         if ($method == self::POST) {
             $curlOptArray[CURLOPT_POST] = true;
-        } else if ($method != self::GET) {
+        } elseif ($method != self::GET) {
             $curlOptArray[CURLOPT_CUSTOMREQUEST] = $method;
         }
 
@@ -512,7 +615,10 @@ class PlexApi {
 
             if ($isLoginCall) {
                 if ($this->lastCallStats['http_code'] != 201) {
-                    throw new \Exception('Invalid status code in authentication response from Plex.tv, expected 201 but got ' . $this->lastCallStats['http_code']);
+                    throw new \Exception(
+                        "Invalid status code in authentication response from Plex.tv, ".
+                        "expected 201 but got {$this->lastCallStats['http_code']}"
+                    );
                 }
 
                 $this->token = $response['authentication-token'];
@@ -523,6 +629,26 @@ class PlexApi {
         return $response;
     }
 
+    /**
+     * Method to build a query string
+     *
+     * @param array $query
+     *
+     * @return string
+     */
+    private function buildHttpQuery(array $query): string
+    {
+        $ret = '';
+        $first = reset($query);
+        if (isset($first) && is_a($first, 'jc21\Util\Filter')) {
+            foreach ($query as $q) {
+                $ret .= (string) $q."&";
+            }
+            return substr($ret, 0, -1);
+        }
+        
+        return http_build_query($query);
+    }
 
     /**
      * xml2array
@@ -536,6 +662,40 @@ class PlexApi {
         return $result;
     }
 
+    /**
+     * Method to convert an array to a collection
+     *
+     * @param array $array
+     *
+     * @return ItemCollection
+     */
+    public static function array2collection($array)
+    {
+        if (is_bool($array)) {
+            return $array;
+        }
+
+        $ic = new ItemCollection();
+        if (!isset($array[0])) {
+            $array[0] = $array;
+        }
+        
+        foreach ($array as $a) {
+            if (!is_array($a) || !isset($a['type'])) {
+                continue;
+            }
+
+            if ($a['type'] == 'movie') {
+                $i = Movie::fromLibrary($a);
+            } elseif ($a['type'] == 'show') {
+                $i = Show::fromLibrary($a);
+            } else {
+                continue;
+            }
+            $ic->addData($i);
+        }
+        return $ic;
+    }
 
     /**
      * normalizeSimpleXML

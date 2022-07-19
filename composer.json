@@ -1,7 +1,11 @@
 {
     "name": "jc21/plex-api",
     "description": "PHP Api for Plex",
-    "keywords": ["plex", "api", "media"],
+    "keywords": [
+        "plex",
+        "api",
+        "media"
+    ],
     "homepage": "https://github.com/jc21/plex-api",
     "license": "BSD-1-Clause",
     "authors": [
@@ -12,10 +16,12 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=7.4",
+        "ext-curl": "*"
     },
     "require-dev": {
-        "victorjonsson/markdowndocs": "dev-master"
+        "victorjonsson/markdowndocs": "dev-master",
+        "symfony/dotenv": "6.2.x-dev"
     },
     "autoload": {
         "psr-0": {

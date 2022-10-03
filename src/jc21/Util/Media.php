@@ -44,7 +44,7 @@ class Media implements JsonSerializable
      *
      * @return mixed
      */
-    public function __get(string $var): mixed
+    public function __get(string $var)
     {
         if (isset($this->data[$var])) {
             return $this->data[$var];
@@ -99,7 +99,7 @@ class Media implements JsonSerializable
      *
      * @return mixed
      */
-    public function jsonSerialize(): mixed
+    public function jsonSerialize()
     {
         return $this->data;
     }

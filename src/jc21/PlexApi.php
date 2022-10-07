@@ -237,10 +237,10 @@ class PlexApi
             return $results;
         }
 
-        $tag = 'Video';
-        if (!isset($results[$tag]) && isset($results['Directory'])) {
-            $tag = 'Directory';
-        }
+        $tag = (isset($results['Video']) ? 'Video' : null);
+        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
+
+        if (is_null($tag)): return false; endif;
 
         return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
     }
@@ -272,10 +272,10 @@ class PlexApi
             return $results;
         }
 
-        $tag = 'Video';
-        if (!isset($results[$tag]) && isset($results['Directory'])) {
-            $tag = 'Directory';
-        }
+        $tag = (isset($results['Video']) ? 'Video' : null);
+        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
+
+        if (is_null($tag)): return false; endif;
 
         return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
     }
@@ -335,10 +335,10 @@ class PlexApi
             return $results;
         }
 
-        $tag = 'Video';
-        if (!isset($results[$tag]) && isset($results['Directory'])) {
-            $tag = 'Directory';
-        }
+        $tag = (isset($results['Video']) ? 'Video' : null);
+        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
+
+        if (is_null($tag)): return false; endif;
 
         return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
     }
@@ -372,10 +372,10 @@ class PlexApi
             return $results;
         }
 
-        $tag = 'Video';
-        if (!isset($results[$tag]) && isset($results['Directory'])) {
-            $tag = 'Directory';
-        }
+        $tag = (isset($results['Video']) ? 'Video' : null);
+        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
+
+        if (is_null($tag)): return false; endif;
 
         return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
     }
@@ -397,10 +397,10 @@ class PlexApi
             return $results;
         }
 
-        $tag = 'Video';
-        if (!isset($results[$tag]) && isset($results['Directory'])) {
-            $tag = 'Directory';
-        }
+        $tag = (isset($results['Video']) ? 'Video' : null);
+        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
+
+        if (is_null($tag)): return false; endif;
 
         return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
     }

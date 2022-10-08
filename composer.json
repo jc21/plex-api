@@ -21,7 +21,8 @@
     },
     "require-dev": {
         "victorjonsson/markdowndocs": "dev-master",
-        "symfony/dotenv": "6.2.x-dev"
+        "symfony/dotenv": "6.2.x-dev",
+        "phpunit/phpunit": "^9"
     },
     "autoload": {
         "psr-0": {

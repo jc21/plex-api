@@ -36,6 +36,7 @@ class PlexApi
     // Plex agents
     public const PLEX_AGENT_NONE = 'com.plexapp.agents.none';
     public const PLEX_MOVIE_AGENT = 'tv.plex.agents.movie';
+    public const PLEX_IMDB_MOVIE_AGENT = 'com.plexapp.agents.imdb';
     public const PLEX_TV_AGENT = 'tv.plex.agents.series';
     public const PLEX_MUSIC_AGENT = 'tv.plex.agents.music';
 
@@ -237,12 +238,14 @@ class PlexApi
             return $results;
         }
 
+        if (is_bool($results) || !$returnCollection): return $results; endif;
+
         $tag = (isset($results['Video']) ? 'Video' : null);
         $tag = (isset($results['Directory']) ? 'Directory' : $tag);
 
         if (is_null($tag)): return false; endif;
 
-        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+        return $this->array2collection($results[$tag]);
     }
 
 
@@ -268,16 +271,14 @@ class PlexApi
     {
         $results = $this->call('/library/sections/' . $sectionKey . '/all');
 
-        if (is_bool($results)) {
-            return $results;
-        }
+        if (is_bool($results) || !$returnCollection): return $results; endif;
 
         $tag = (isset($results['Video']) ? 'Video' : null);
         $tag = (isset($results['Directory']) ? 'Directory' : $tag);
 
         if (is_null($tag)): return false; endif;
 
-        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+        return $this->array2collection($results[$tag]);
     }
 
 
@@ -331,16 +332,14 @@ class PlexApi
     {
         $results = $this->call('/library/recentlyAdded');
 
-        if (is_bool($results)) {
-            return $results;
-        }
+        if (is_bool($results) || !$returnCollection): return $results; endif;
 
         $tag = (isset($results['Video']) ? 'Video' : null);
         $tag = (isset($results['Directory']) ? 'Directory' : $tag);
 
         if (is_null($tag)): return false; endif;
 
-        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+        return $this->array2collection($results[$tag]);
     }
 
 
@@ -368,16 +367,14 @@ class PlexApi
     {
         $results = $this->call('/search', ['query' => $query]);
 
-        if (is_bool($results)) {
-            return $results;
-        }
+        if (is_bool($results) || !$returnCollection): return $results; endif;
 
         $tag = (isset($results['Video']) ? 'Video' : null);
         $tag = (isset($results['Directory']) ? 'Directory' : $tag);
 
         if (is_null($tag)): return false; endif;
 
-        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+        return $this->array2collection($results[$tag]);
     }
 
     /**
@@ -393,16 +390,14 @@ class PlexApi
     {
         $results = $this->call("/library/sections/{$sectionKey}/all", $filter);
 
-        if (is_bool($results)) {
-            return $results;
-        }
+        if (is_bool($results) || !$returnCollection): return $results; endif;
 
         $tag = (isset($results['Video']) ? 'Video' : null);
         $tag = (isset($results['Directory']) ? 'Directory' : $tag);
 
         if (is_null($tag)): return false; endif;
 
-        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+        return $this->array2collection($results[$tag]);
     }
 
     /**

@@ -234,18 +234,7 @@ class PlexApi
     {
         $results = $this->call('/library/onDeck');
 
-        if (is_bool($results)) {
-            return $results;
-        }
-
-        if (is_bool($results) || !$returnCollection): return $results; endif;
-
-        $tag = (isset($results['Video']) ? 'Video' : null);
-        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
-
-        if (is_null($tag)): return false; endif;
-
-        return $this->array2collection($results[$tag]);
+        return $this->checkResults($results, $returnCollection);
     }
 
 
@@ -271,14 +260,7 @@ class PlexApi
     {
         $results = $this->call('/library/sections/' . $sectionKey . '/all');
 
-        if (is_bool($results) || !$returnCollection): return $results; endif;
-
-        $tag = (isset($results['Video']) ? 'Video' : null);
-        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
-
-        if (is_null($tag)): return false; endif;
-
-        return $this->array2collection($results[$tag]);
+        return $this->checkResults($results, $returnCollection);
     }
 
 
@@ -332,14 +314,7 @@ class PlexApi
     {
         $results = $this->call('/library/recentlyAdded');
 
-        if (is_bool($results) || !$returnCollection): return $results; endif;
-
-        $tag = (isset($results['Video']) ? 'Video' : null);
-        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
-
-        if (is_null($tag)): return false; endif;
-
-        return $this->array2collection($results[$tag]);
+        return $this->checkResults($results, $returnCollection);
     }
 
 
@@ -367,14 +342,7 @@ class PlexApi
     {
         $results = $this->call('/search', ['query' => $query]);
 
-        if (is_bool($results) || !$returnCollection): return $results; endif;
-
-        $tag = (isset($results['Video']) ? 'Video' : null);
-        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
-
-        if (is_null($tag)): return false; endif;
-
-        return $this->array2collection($results[$tag]);
+        return $this->checkResults($results, $returnCollection);
     }
 
     /**
@@ -390,14 +358,7 @@ class PlexApi
     {
         $results = $this->call("/library/sections/{$sectionKey}/all", $filter);
 
-        if (is_bool($results) || !$returnCollection): return $results; endif;
-
-        $tag = (isset($results['Video']) ? 'Video' : null);
-        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
-
-        if (is_null($tag)): return false; endif;
-
-        return $this->array2collection($results[$tag]);
+        return $this->checkResults($results, $returnCollection);
     }
 
     /**
@@ -717,5 +678,25 @@ class PlexApi
         } else {
             $result = $data;
         }
+    }
+
+    /**
+     * Method to check the results for what is expected
+     * 
+     * @param array $results
+     * @param bool $returnCollection
+     * 
+     * @return ItemCollection|bool|array
+     */
+    private function checkResults($results, bool $returnCollection)
+    {
+        if (is_bool($results) || !$returnCollection): return $results; endif;
+
+        $tag = (isset($results['Video']) ? 'Video' : null);
+        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
+
+        if (is_null($tag)): return false; endif;
+
+        return $this->array2collection($results[$tag]);
     }
 }

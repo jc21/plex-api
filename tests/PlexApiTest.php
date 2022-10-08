@@ -2,13 +2,12 @@
 
 namespace jc21\PlexApi\Tests;
 
-use InvalidArgumentException;
-use jc21\Collections\ItemCollection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Dotenv\Dotenv;
 
 use jc21\PlexApi;
 use jc21\Util\Filter;
+use jc21\Collections\ItemCollection;
 
 /**
  * @coversDefaultClass PlexApi
@@ -18,17 +17,51 @@ class TestPlexApi extends TestCase
 
     /**
      * Api to check
+     * 
+     * @var PlexApi
      */
     private ?PlexApi $api;
 
+    /**
+     * Plex.tv username
+     * 
+     * @var string
+     */
     private string $user;
 
+    /**
+     * Plex.tv password
+     * 
+     * @var string
+     */
     private string $password;
 
+    /**
+     * Local Plex server
+     * 
+     * @var string
+     */
     private string $host;
 
+    /**
+     * Port to connect to Plex through
+     * 
+     * @var int
+     */
     private int $port;
 
+    /**
+     * Connect to Plex through SSL
+     * 
+     * @var bool
+     */
+    private bool $ssl;
+
+    /**
+     * Plex token for authentication
+     * 
+     * @var string
+     */
     private string $token;
 
     /**
@@ -67,6 +100,7 @@ class TestPlexApi extends TestCase
         $this->user = (isset($_ENV['PLEX_USER']) ? $_ENV['PLEX_USER'] : false);
         $this->password = (isset($_ENV['PLEX_PASSWORD']) ? $_ENV['PLEX_PASSWORD'] : false);
         $this->port = (isset($_ENV['PLEX_PORT']) ? $_ENV['PLEX_PORT'] : false);
+        $this->ssl = (isset($_ENV['PLEX_SSL']) ? (bool) $_ENV['PLEX_SSL'] : false);
         $ret = true;
 
         if ($this->host === false) {

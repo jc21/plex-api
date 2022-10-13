@@ -5,7 +5,6 @@ namespace jc21;
 use jc21\Collections\ItemCollection;
 use jc21\Movies\Movie;
 use jc21\TV\Show;
-use jc21\Util\Item;
 
 /**
  * Plex API Class - Communicate with your Plex Media Server.
@@ -682,20 +681,22 @@ class PlexApi
 
     /**
      * Method to check the results for what is expected
-     * 
+     *
      * @param array $results
      * @param bool $returnCollection
-     * 
+     *
      * @return ItemCollection|bool|array
      */
     private function checkResults($results, bool $returnCollection)
     {
-        if (is_bool($results) || !$returnCollection): return $results; endif;
+        if (is_bool($results) || !$returnCollection): return $results;
+        endif;
 
         $tag = (isset($results['Video']) ? 'Video' : null);
         $tag = (isset($results['Directory']) ? 'Directory' : $tag);
 
-        if (is_null($tag)): return false; endif;
+        if (is_null($tag)): return false;
+        endif;
 
         return $this->array2collection($results[$tag]);
     }

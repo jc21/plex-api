@@ -2,10 +2,8 @@
 <phpunit 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   bootstrap="tests/bootstrap.php" 
-  colors="true" 
-  verbose="true" 
-  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-  cacheResult="true">
+  colors="true" verbose="true" cacheResult="true"
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
   <coverage includeUncoveredFiles="true" processUncoveredFiles="true">
     <include>
       <directory suffix=".php">src/</directory>

@@ -4,7 +4,7 @@
 
 | Visibility | Function (parameters,...): return |
 |:-----------|:---------|
-| public | <strong>__construct(</strong><em>string</em> <strong>$host=`'127.0.0.1'`</strong>, <em>mixed/int</em> <strong>$port=32400</strong>, <em>bool</em> <strong>$ssl=false</strong>)</strong> : <em>void</em><br /><em>Instantiate the class with your Host/Port</em> |
+| public | <strong>__construct(</strong><em>string</em> <strong>$host = `'127.0.0.1'`</strong>, <em>mixed/int</em> <strong>$port = 32400</strong>, <em>bool</em> <strong>$ssl = false</strong>)</strong> : <em>void</em><br /><em>Instantiate the class with your Host/Port</em> |
 | public | <strong>getBaseInfo()</strong> : <em>array\|bool</em><br /><em>Get Plex Server basic info</em> |
 | public | <strong>getLastCallStats()</strong> : <em>array</em><br /><em>Get last curl stats, for debugging purposes</em> |
 | public | <strong>getLibrarySections()</strong> : <em>array\|bool</em><br /><em>Get Library Sections ie Movies, TV Shows etc</em> |

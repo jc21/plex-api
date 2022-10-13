@@ -17,49 +17,49 @@ class TestPlexApi extends TestCase
 
     /**
      * Api to check
-     * 
+     *
      * @var PlexApi
      */
     private ?PlexApi $api;
 
     /**
      * Plex.tv username
-     * 
+     *
      * @var string
      */
     private string $user;
 
     /**
      * Plex.tv password
-     * 
+     *
      * @var string
      */
     private string $password;
 
     /**
      * Local Plex server
-     * 
+     *
      * @var string
      */
     private string $host;
 
     /**
      * Port to connect to Plex through
-     * 
+     *
      * @var int
      */
     private int $port;
 
     /**
      * Connect to Plex through SSL
-     * 
+     *
      * @var bool
      */
     private bool $ssl;
 
     /**
      * Plex token for authentication
-     * 
+     *
      * @var string
      */
     private string $token;
@@ -72,14 +72,14 @@ class TestPlexApi extends TestCase
         $dot = new Dotenv();
 
         $envfname = __DIR__.'/.env';
-        if(!file_exists($envfname)) {
+        if (!file_exists($envfname)) {
             throw new \InvalidArgumentException(sprintf('%s does not exist', $envfname));
         }
 
         $dot->loadEnv($envfname);
 
         $this->api = null;
-        if(!$this->envCheck()) {
+        if (!$this->envCheck()) {
             die;
         }
 
@@ -93,6 +93,11 @@ class TestPlexApi extends TestCase
         }
     }
 
+    /**
+     * Helper method to check available environment variables
+     *
+     * @return bool
+     */
     private function envCheck()
     {
         $this->host = (isset($_ENV['PLEX_HOST']) ? $_ENV['PLEX_HOST'] : false);
@@ -167,7 +172,6 @@ class TestPlexApi extends TestCase
     {
         $sec = $this->api->getLibrarySections();
         $this->assertArrayHasKey('size', $sec);
-
         $this->assertGreaterThan(0, $sec['size']);
     }
 
@@ -175,7 +179,6 @@ class TestPlexApi extends TestCase
     {
         $res = $this->api->getLibrarySectionContents($_ENV['SECTION_KEY']);
         $this->assertArrayHasKey('size', $res);
-
         $this->assertGreaterThan(0, $res['size']);
     }
 
@@ -183,7 +186,6 @@ class TestPlexApi extends TestCase
     {
         $res = $this->api->getLibrarySectionContents($_ENV['SECTION_KEY'], true);
         $this->assertInstanceOf(ItemCollection::class, $res);
-
         $this->assertGreaterThan(0, $res->count());
     }
 
@@ -191,9 +193,7 @@ class TestPlexApi extends TestCase
     {
         $res = $this->api->getRecentlyAdded();
         $this->assertIsArray($res);
-
         $this->assertArrayHasKey('size', $res);
-
         $this->assertGreaterThan(0, $res['size']);
     }
 

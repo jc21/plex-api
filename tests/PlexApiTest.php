@@ -8,12 +8,34 @@ use Symfony\Component\Dotenv\Dotenv;
 use jc21\PlexApi;
 use jc21\Util\Filter;
 use jc21\Collections\ItemCollection;
+use jc21\TV\Episode;
 
 /**
  * @coversDefaultClass PlexApi
  */
 class TestPlexApi extends TestCase
 {
+
+    /**
+     * Constant message to output when test skipped
+     *
+     * @var string
+     */
+    private const MOVIE_OFF_MSG = "Movie tests turned off";
+
+    /**
+     * Constant message to output when test skipped
+     *
+     * @var string
+     */
+    private const TV_OFF_MSG = "TV tests turned off";
+
+    /**
+     * Constant message to output when test skipped
+     *
+     * @var string
+     */
+    private const MUSIC_OFF_MSG = "Music tests turned off";
 
     /**
      * Api to check
@@ -65,10 +87,35 @@ class TestPlexApi extends TestCase
     private string $token;
 
     /**
+     * Variable to decide if we are running movie tests
+     *
+     * @var bool
+     */
+    private bool $runMovieTests;
+
+    /**
+     * Variable to decide if we are running TV tests
+     *
+     * @var bool
+     */
+    private bool $runTVTests;
+
+    /**
+     * Variable to decide if we are running music tests
+     *
+     * @var bool
+     */
+    private bool $runMusicTests;
+
+    /**
      * Setup function
      */
     public function setUp(): void
     {
+        $this->runMovieTests = false;
+        $this->runTVTests = false;
+        $this->runMusicTests = false;
+
         $dot = new Dotenv();
 
         $envfname = __DIR__.'/.env';
@@ -89,8 +136,10 @@ class TestPlexApi extends TestCase
         } else {
             $this->api->setAuth($this->user, $this->password);
 
-            throw new \Exception("Put this token in your .env file {$envfname} as 'PLEX_TOKEN={$this->api->getToken()}'");
+            die("Put this token in your .env file {$envfname} as 'PLEX_TOKEN={$this->api->getToken()}' and then you can remove PLEX_USER and PLEX_PASSWORD if you like");
         }
+
+        $GLOBALS['client'] = $this->api;
     }
 
     /**
@@ -101,10 +150,10 @@ class TestPlexApi extends TestCase
     private function envCheck()
     {
         $this->host = (isset($_ENV['PLEX_HOST']) ? $_ENV['PLEX_HOST'] : false);
-        $this->token = (isset($_ENV['PLEX_TOKEN']) ? $_ENV['PLEX_TOKEN'] : false);
+        $this->token = (isset($_ENV['PLEX_TOKEN']) ? $_ENV['PLEX_TOKEN'] : '');
         $this->user = (isset($_ENV['PLEX_USER']) ? $_ENV['PLEX_USER'] : false);
         $this->password = (isset($_ENV['PLEX_PASSWORD']) ? $_ENV['PLEX_PASSWORD'] : false);
-        $this->port = (isset($_ENV['PLEX_PORT']) ? $_ENV['PLEX_PORT'] : false);
+        $this->port = (isset($_ENV['PLEX_PORT']) ? $_ENV['PLEX_PORT'] : 32400);
         $this->ssl = (isset($_ENV['PLEX_SSL']) ? (bool) $_ENV['PLEX_SSL'] : false);
         $ret = true;
 
@@ -112,29 +161,76 @@ class TestPlexApi extends TestCase
             print("PLEX_HOST not found in .env file".PHP_EOL);
         }
 
-        if ($this->token === false && ($this->user === false || $this->password === false)) {
+        if (empty($this->token) && ($this->user === false || $this->password === false)) {
             print("PLEX_TOKEN not found in .env file".PHP_EOL);
             $ret = false;
         }
 
-        if (!isset($_ENV['SECTION_KEY']) || !is_numeric($_ENV['SECTION_KEY'])) {
-            print("SECTION_KEY not found or not INT in .env, populate with ID of library you want to test".PHP_EOL);
-            $ret = false;
+        if (isset($_ENV['MOVIE_TESTS']) && ((bool) $_ENV['MOVIE_TESTS'])) {
+            $this->runMovieTests = true;
+
+            if (!isset($_ENV['MOVIE_SECTION_KEY']) || !is_numeric($_ENV['MOVIE_SECTION_KEY'])) {
+                print("MOVIE_SECTION_KEY not found or not INT in .env, populate with ID of library you want to test".PHP_EOL);
+                $ret = false;
+            }
+
+            if (!isset($_ENV['MOVIE_ITEM_ID']) || !is_numeric($_ENV['MOVIE_ITEM_ID'])) {
+                print("MOVIE_ITEM_ID not found or not INT in .env".PHP_EOL);
+                $ret = false;
+            }
+
+            if (!isset($_ENV['MOVIE_SEARCH_QUERY'])) {
+                print("MOVIE_SEARCH_QUERY not found in .env".PHP_EOL);
+                $ret = false;
+            }
+
+            if (!isset($_ENV['MOVIE_FILTER_QUERY'])) {
+                print("MOVIE_FILTER_QUERY not found in .env, MUST be a title filter".PHP_EOL);
+                $ret = false;
+            }
         }
 
-        if (!isset($_ENV['ITEM_ID']) || !is_numeric($_ENV['ITEM_ID'])) {
-            print("ITEM_ID not found or not INT in .env".PHP_EOL);
-            $ret = false;
+        if (isset($_ENV['TV_TESTS']) && ((bool) $_ENV['TV_TESTS'])) {
+            $this->runTVTests = true;
+
+            if (!isset($_ENV['TV_SECTION_KEY']) || !is_numeric($_ENV['TV_SECTION_KEY'])) {
+                print("TV_SECTION_KEY not found or not INT in .env, populate with ID of library you want to test".PHP_EOL);
+                $ret = false;
+            }
+
+            if (!isset($_ENV['TV_ITEM_ID']) || !is_numeric($_ENV['TV_ITEM_ID'])) {
+                print("TV_ITEM_ID not found or not INT in .env".PHP_EOL);
+                $ret = false;
+            }
+
+            if (!isset($_ENV['TV_SEARCH_QUERY'])) {
+                print("TV_SEARCH_QUERY not found in .env".PHP_EOL);
+                $ret = false;
+            }
+
+            if (!isset($_ENV['TV_FILTER_QUERY'])) {
+                print("TV_FILTER_QUERY not found in .env, MUST be a title filter".PHP_EOL);
+                $ret = false;
+            }
         }
 
-        if (!isset($_ENV['SEARCH_QUERY'])) {
-            print("SEARCH_QUERY not found in .env".PHP_EOL);
-            $ret = false;
-        }
+        if (isset($_ENV['MUSIC_TESTS']) && ((bool) $_ENV['MUSIC_TESTS'])) {
+            $this->runMusicTests = true;
 
-        if (!isset($_ENV['FILTER_QUERY'])) {
-            print("FILTER_QUERY not found in .env, MUST be a title filter".PHP_EOL);
-            $ret = false;
+            if (!isset($_ENV['MUSIC_SECTION_KEY']) || !is_numeric($_ENV['MUSIC_SECTION_KEY'])) {
+                print("MUSIC_SECTION_KEY not found in .env".PHP_EOL);
+                $ret = false;
+            }
+
+            if (!isset($_ENV['MUSIC_SEARCH_QUERY'])) {
+                print("MUSIC_SEARCH_QUERY not found in .env".PHP_EOL);
+                $ret = false;
+            }
+
+            if (!isset($_ENV['MUSIC_FILTER_QUERY'])) {
+                print("MUSIC_FILTER_QUERY not found in .env MUST be a title filter".PHP_EOL);
+                $ret = false;
+            }
         }
 
         return $ret;
@@ -168,27 +264,6 @@ class TestPlexApi extends TestCase
         $this->assertGreaterThan(0, $od->count());
     }
 
-    public function testGetSections()
-    {
-        $sec = $this->api->getLibrarySections();
-        $this->assertArrayHasKey('size', $sec);
-        $this->assertGreaterThan(0, $sec['size']);
-    }
-
-    public function testGetLibrarySectionContents()
-    {
-        $res = $this->api->getLibrarySectionContents($_ENV['SECTION_KEY']);
-        $this->assertArrayHasKey('size', $res);
-        $this->assertGreaterThan(0, $res['size']);
-    }
-
-    public function testGetLibrarySectionContentsAsCollection()
-    {
-        $res = $this->api->getLibrarySectionContents($_ENV['SECTION_KEY'], true);
-        $this->assertInstanceOf(ItemCollection::class, $res);
-        $this->assertGreaterThan(0, $res->count());
-    }
-
     public function testGetRecentlyAdded()
     {
         $res = $this->api->getRecentlyAdded();
@@ -197,66 +272,248 @@ class TestPlexApi extends TestCase
         $this->assertGreaterThan(0, $res['size']);
     }
 
+    public function testGetSections()
+    {
+        $sec = $this->api->getLibrarySections();
+        $this->assertArrayHasKey('size', $sec);
+        $this->assertGreaterThan(0, $sec['size']);
+    }
+
+    public function testGetMovieLibrarySectionContents()
+    {
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->getLibrarySectionContents($_ENV['MOVIE_SECTION_KEY']);
+        $this->assertArrayHasKey('size', $res);
+        $this->assertGreaterThan(0, $res['size']);
+    }
+
+    public function testGetMovieLibrarySectionContentsAsCollection()
+    {
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->getLibrarySectionContents($_ENV['MOVIE_SECTION_KEY'], true);
+        $this->assertInstanceOf(ItemCollection::class, $res);
+        $this->assertGreaterThan(0, $res->count());
+    }
+
     public function testGetMetadata()
     {
-        $res = $this->api->getMetadata($_ENV['ITEM_ID']);
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->getMetadata($_ENV['MOVIE_ITEM_ID']);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('size', $res);
         $this->assertGreaterThan(0, $res['size']);
     }
 
-    public function testSearch()
+    public function testMovieSearch()
     {
-        $res = $this->api->search($_ENV['SEARCH_QUERY']);
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->search($_ENV['MOVIE_SEARCH_QUERY']);
         $this->assertIsArray($res);
-        $this->assertArrayHasKey('size', $res);
-        $this->assertGreaterThan(0, $res['size']);
+        $this->assertArrayHasKey('Video', $res);
+        $this->assertGreaterThan(0, count($res['Video']));
     }
 
-    public function testSearchReturnCollection()
+    public function testMovieSearchReturnCollection()
     {
-        $res = $this->api->search($_ENV['SEARCH_QUERY'], true);
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->search($_ENV['MOVIE_SEARCH_QUERY'], true);
         $this->assertInstanceOf(ItemCollection::class, $res);
         $this->assertGreaterThan(0, $res->count());
     }
 
-    public function testFilter()
+    public function testMovieFilterAsFilterArray()
     {
-        $res = $this->api->filter($_ENV['SECTION_KEY'], ['title' => $_ENV['FILTER_QUERY']]);
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->filter($_ENV['MOVIE_SECTION_KEY'], ['title' => $_ENV['MOVIE_FILTER_QUERY']]);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('size', $res);
         $this->assertGreaterThan(0, $res['size']);
     }
 
-    public function testFilterWithFilterObject()
+    public function testMovieFilterWithFilterObject()
     {
-        $filter = new Filter('title', $_ENV['FILTER_QUERY']);
-        $res = $this->api->filter($_ENV['SECTION_KEY'], [$filter]);
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $filter = new Filter('title', $_ENV['MOVIE_FILTER_QUERY']);
+        $res = $this->api->filter($_ENV['MOVIE_SECTION_KEY'], [$filter]);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('size', $res);
         $this->assertGreaterThan(0, $res['size']);
     }
 
-    public function testFilterReturnCollection()
+    public function testMovieFilterReturnCollection()
     {
-        $res = $this->api->filter($_ENV['SECTION_KEY'], ['title' => $_ENV['FILTER_QUERY']], true);
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->filter($_ENV['MOVIE_SECTION_KEY'], ['title' => $_ENV['MOVIE_FILTER_QUERY']], true);
         $this->assertInstanceOf(ItemCollection::class, $res);
         $this->assertGreaterThan(0, $res->count());
     }
 
-    public function testFilterWithFilterObjectReturnCollection()
+    public function testMovieFilterWithFilterObjectReturnCollection()
     {
-        $filter = new Filter('title', $_ENV['FILTER_QUERY']);
-        $res = $this->api->filter($_ENV['SECTION_KEY'], [$filter], true);
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $filter = new Filter('title', $_ENV['MOVIE_FILTER_QUERY']);
+        $res = $this->api->filter($_ENV['MOVIE_SECTION_KEY'], [$filter], true);
         $this->assertInstanceOf(ItemCollection::class, $res);
         $this->assertGreaterThan(0, $res->count());
     }
 
-    public function testGetMatches()
+    public function testMovieGetMatches()
     {
-        $res = $this->api->getMatches($_ENV['ITEM_ID']);
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->getMatches($_ENV['MOVIE_ITEM_ID']);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('size', $res);
         $this->assertGreaterThan(0, $res['size']);
+    }
+
+    public function testGetTVLibrarySectionContents()
+    {
+        if (!$this->runTVTests) {
+            $this->markTestSkipped(self::TV_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->getLibrarySectionContents($_ENV['TV_SECTION_KEY']);
+        $this->assertIsArray($res);
+        $this->assertArrayHasKey('size', $res);
+        $this->assertGreaterThan(0, $res['size']);
+    }
+
+    public function testGetTVLibrarySectionContentsReturnCollection()
+    {
+        if (!$this->runTVTests) {
+            $this->markTestSkipped(self::TV_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->getLibrarySectionContents($_ENV['TV_SECTION_KEY'], true);
+        $this->assertInstanceOf(ItemCollection::class, $res);
+        $this->assertGreaterThan(0, $res->count());
+    }
+
+    public function testGetTVItemMetadata()
+    {
+        if (!$this->runTVTests) {
+            $this->markTestSkipped(self::TV_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->getMetadata($_ENV['TV_ITEM_ID']);
+        $this->assertIsArray($res);
+        $this->assertArrayHasKey('size', $res);
+        $this->assertGreaterThan(0, $res['size']);
+    }
+
+    public function testGetTVItemMetadataAsObject()
+    {
+        if (!$this->runTVTests) {
+            $this->markTestSkipped(self::TV_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->getMetadata($_ENV['TV_ITEM_ID'], true);
+        $this->assertInstanceOf(Episode::class, $res);
+    }
+
+    public function testTVSearch()
+    {
+        if (!$this->runTVTests) {
+            $this->markTestSkipped(self::TV_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->search($_ENV['TV_SEARCH_QUERY']);
+        $this->assertIsArray($res);
+        $this->assertArrayHasKey('Video', $res);
+        $this->assertGreaterThan(0, count($res['Video']));
+    }
+
+    public function testTVFilterWithFilterObjectReturnCollection()
+    {
+        if (!$this->runTVTests) {
+            $this->markTestSkipped(self::TV_OFF_MSG);
+            return;
+        }
+
+        $filter = new Filter('title', $_ENV['TV_FILTER_QUERY']);
+        $res = $this->api->filter($_ENV['TV_SECTION_KEY'], [$filter], true);
+        $this->assertInstanceOf(ItemCollection::class, $res);
+        $this->assertGreaterThan(0, $res->count());
+    }
+
+    public function testGetMusic()
+    {
+        if (!$this->runMusicTests) {
+            $this->markTestSkipped(self::MUSIC_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->getLibrarySectionContents($_ENV['MUSIC_SECTION_KEY'], true);
+        $this->assertGreaterThan(0, $res->count());
+    }
+
+    public function testMusicSearch()
+    {
+        if (!$this->runMusicTests) {
+            $this->markTestSkipped(self::MUSIC_OFF_MSG);
+            return;
+        }
+
+        $res = $this->api->search($_ENV['MUSIC_SEARCH_QUERY']);
+        $this->assertIsArray($res);
+        $this->assertArrayHasKey('Directory', $res);
+        $this->assertGreaterThan(0, count($res['Directory']));
+    }
+
+    public function testMusicFilterAsObject()
+    {
+        if (!$this->runMusicTests) {
+            $this->markTestSkipped(self::MUSIC_OFF_MSG);
+            return;
+        }
+
+        $filter = new Filter('title', $_ENV['MUSIC_FILTER_QUERY']);
+        $res = $this->api->filter($_ENV['MUSIC_SECTION_KEY'], [$filter], true);
+        $this->assertGreaterThan(0, $res->count());
     }
 }

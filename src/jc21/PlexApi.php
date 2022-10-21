@@ -4,14 +4,19 @@ namespace jc21;
 
 use jc21\Collections\ItemCollection;
 use jc21\Movies\Movie;
+use jc21\Music\Artist;
+use jc21\Music\Album;
+use jc21\Music\Track;
 use jc21\TV\Show;
+use jc21\TV\Season;
+use jc21\TV\Episode;
 
 /**
  * Plex API Class - Communicate with your Plex Media Server.
  *
  * @license BSD
  * @author  Jamie Curnow  <jc@jc21.com>
- * @version 1.3
+ * @version 2.1
  *
  * @example
  * <code>
@@ -25,7 +30,7 @@ use jc21\TV\Show;
 
 class PlexApi
 {
-    public const VERSION = '1.3';
+    public const VERSION = '2.1';
 
     const GET    = 'GET';
     const POST   = 'POST';
@@ -321,11 +326,20 @@ class PlexApi
      * Get Metadata for an Item
      *
      * @param  int   $item
-     * @return array|bool
+     * @param  bool  $returnObject
+     * @return array|bool|object
      */
-    public function getMetadata($item)
+    public function getMetadata($item, bool $returnObject = false)
     {
-        return $this->call('/library/metadata/' . (int) $item);
+        $res = $this->call('/library/metadata/' . (int) $item);
+        if (!$returnObject): return $res;
+        endif;
+        
+        $tag = (isset($res['Video']) ? 'Video' : null);
+        $tag = (isset($res['Directory']) ? 'Directory' : $tag);
+
+        $ret = $this->array2object($res[$tag]);
+        return $ret;
     }
 
 
@@ -640,16 +654,49 @@ class PlexApi
                 continue;
             }
 
-            if ($a['type'] == 'movie') {
-                $i = Movie::fromLibrary($a);
-            } elseif ($a['type'] == 'show') {
-                $i = Show::fromLibrary($a);
-            } else {
+            $i = self::array2object($a);
+            
+            if (is_null($i)) {
                 continue;
             }
+
             $ic->addData($i);
         }
         return $ic;
+    }
+
+    /**
+     * Method to convert a returned array from the API to an specific object
+     *
+     * @param array $arr
+     *
+     * @return Show|Season|Episode|Artist|Album|Track|Movie
+     */
+    public static function array2object(array $arr)
+    {
+        if (!isset($arr['type'])) {
+            return null;
+        }
+
+        $ns = "jc21\\";
+        if (in_array($arr['type'], ['show', 'season', 'episode'])) {
+            $ns .= "TV\\";
+        } elseif (in_array($arr['type'], ['artist', 'album', 'track'])) {
+            $ns .= "Music\\";
+        } elseif ($arr['type'] == 'movie') {
+            $ns .= "Movies\\";
+        }
+
+        if ($ns == "jc21\\") {
+            return null;
+        }
+
+        $class = $ns.ucfirst($arr['type'])."::fromLibrary";
+        if (!method_exists($ns.ucfirst($arr['type']), "fromLibrary")) {
+            return null;
+        }
+        $ret = $class($arr);
+        return $ret;
     }
 
     /**

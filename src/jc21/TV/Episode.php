@@ -3,9 +3,10 @@
 namespace jc21\TV;
 
 use DateTime;
+use JsonSerializable;
 use jc21\Util\Media;
 use jc21\Util\Duration;
-use JsonSerializable;
+use jc21\Util\Item;
 
 /**
  * Class to store episode data
@@ -42,7 +43,7 @@ use JsonSerializable;
  * @property DateTime $updatedAt
  * @property Media $media
  */
-class Episode implements JsonSerializable
+class Episode implements Item, JsonSerializable
 {
     /**
      * Class data
@@ -124,7 +125,7 @@ class Episode implements JsonSerializable
      *
      * @return Episode
      */
-    public static function fromLibrary(array $lib)
+    public static function fromLibrary(array $lib): Episode
     {
         $me = new static();
         $me->data = $lib;
@@ -160,7 +161,7 @@ class Episode implements JsonSerializable
         }
 
         if (isset($lib['Director']) && is_array($lib['Director'])) {
-            if (count($lib['Director']) == 1) {
+            if (isset($lib['Director']['tag'])) {
                 $me->data['director'][] = $lib['Director']['tag'];
             } else {
                 foreach ($lib['Director'] as $d) {

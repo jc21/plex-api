@@ -44,7 +44,7 @@ class ItemCollection implements IteratorAggregate
      *
      * @param int $position
      *
-     * @return null|Movie|Show
+     * @return null|Movie|Show|Season|Episode|Artist|Album|Track
      */
     public function getData(int $position = 0)
     {
@@ -57,6 +57,8 @@ class ItemCollection implements IteratorAggregate
 
     /**
      * Method to add a Item to the collection
+     *
+     * @param Item $Item
      */
     public function addData(Item $Item)
     {

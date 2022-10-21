@@ -30,6 +30,8 @@
         }
     },
     "scripts": {
-        "test": "php vendor/bin/phpunit"
+        "test": "php vendor/bin/phpunit",
+        "sections": "php tests/SectionList.php",
+        "items": "php tests/ItemList.php"
     }
 }

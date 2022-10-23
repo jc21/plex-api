@@ -2,8 +2,8 @@
 
 ## Function List
 
-| Visibility | Function (parameters,...): return |
-|:-----------|:---------|
+| Visibility       | Function (parameters,...): return |
+| :--------------- | :---------------- |
 | public | <strong>__construct(</strong><em>string</em> <strong>$host = `'127.0.0.1'`</strong>, <em>mixed/int</em> <strong>$port = 32400</strong>, <em>bool</em> <strong>$ssl = false</strong>)</strong> : <em>void</em><br /><em>Instantiate the class with your Host/Port</em> |
 | public | <strong>getBaseInfo()</strong> : <em>array\|bool</em><br /><em>Get Plex Server basic info</em> |
 | public | <strong>getLastCallStats()</strong> : <em>array</em><br /><em>Get last curl stats, for debugging purposes</em> |
@@ -31,4 +31,5 @@
 | private | <strong>buildHttpQuery(</strong><em>array</em> <strong>$query)</strong>: <em>string</em><br /><em>Build http query string from array of `Filter` objects</em> |
 | protected static | <strong>normalizeSimpleXML(</strong><em>mixed</em> <strong>$obj</strong>, <em>mixed</em> <strong>$result</strong>)</strong> : <em>void</em><br /><em>normalizeSimpleXML</em> |
 | protected static | <strong>xml2array(</strong><em>mixed</em> <strong>$xml</strong>)</strong> : <em>mixed</em><br /><em>xml2array</em> |
-| public static | <strong>array2Collection(</strong><em>array</em> <strong>$array)</strong>: <em>ItemCollection</em> |
+| public static | <strong>array2collection(</strong><em>array</em> <strong>$array)</strong>: <em>ItemCollection</em> |
+| public static | <strong>array2object(</strong><em>array</em> <strong>$array)</strong>: <em>Movie/Show/Season/Episode/Artist/Album/Track</em> |

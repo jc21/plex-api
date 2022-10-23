@@ -119,8 +119,8 @@ class TestPlexApi extends TestCase
         $dot = new Dotenv();
 
         $envfname = __DIR__.'/.env';
-        if (!file_exists($envfname)) {
-            throw new \InvalidArgumentException(sprintf('%s does not exist', $envfname));
+        if (!file_exists($envfname) || !is_readable($envfname)) {
+            throw new \InvalidArgumentException(sprintf('%s does not exist or is not readable', $envfname));
         }
 
         $dot->loadEnv($envfname);

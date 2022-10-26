@@ -226,6 +226,15 @@ class PlexApi
         return $this->call('/transcode/sessions');
     }
 
+    /**
+     * Method to get plex account data
+     *
+     * @return array|bool
+     */
+    public function getAccount()
+    {
+        return $this->call('/myplex/account');
+    }
 
     /**
      * Get On Deck Info

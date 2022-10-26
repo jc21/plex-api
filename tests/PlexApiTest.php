@@ -241,6 +241,22 @@ class TestPlexApi extends TestCase
         $this->assertTrue(is_a($this->api, "jc21\PlexApi"));
     }
 
+    public function testGetBaseInfo()
+    {
+        $res = $this->api->getBaseInfo();
+        $this->assertIsArray($res);
+        $this->assertArrayHasKey('size', $res);
+        $this->assertGreaterThan(0, $res['size']);
+    }
+
+    public function testGetAccount()
+    {
+        $res = $this->api->getAccount();
+        $this->assertIsArray($res);
+        $this->assertArrayHasKey('signInState', $res);
+        $this->assertEquals('ok', $res['signInState']);
+    }
+
     public function testGetSessions()
     {
         $this->assertArrayHasKey('size', $this->api->getSessions());

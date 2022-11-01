@@ -6,6 +6,7 @@ use DateTime;
 use Exception;
 use JsonSerializable;
 use jc21\Util\Item;
+use jc21\Collections\ItemCollection;
 
 /**
  * Artist
@@ -39,16 +40,16 @@ class Artist implements Item, JsonSerializable
     /**
      * Array to store albums
      *
-     * @var array:Album
+     * @var ItemCollection
      */
-    private array $albums;
+    private ItemCollection $albums;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->albums = [];
+        $this->albums = new ItemCollection();
     }
 
     /**
@@ -79,13 +80,23 @@ class Artist implements Item, JsonSerializable
     }
 
     /**
+     * Method to retrieve the albums this artist has released
+     * 
+     * @return ItemCollection
+     */
+    public function getChildren(): ItemCollection
+    {
+        return $this->albums;
+    }
+
+    /**
      * Method to add album
      *
      * @param Album $a
      */
     public function addAlbum(Album $a)
     {
-        $this->albums[] = $a;
+        $this->albums->addData($a);
     }
 
     /**

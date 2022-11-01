@@ -8,6 +8,7 @@ use Symfony\Component\Dotenv\Dotenv;
 use jc21\PlexApi;
 use jc21\Util\Filter;
 use jc21\Collections\ItemCollection;
+use jc21\Section;
 use jc21\TV\Episode;
 
 /**
@@ -295,6 +296,14 @@ class TestPlexApi extends TestCase
         $this->assertGreaterThan(0, $sec['size']);
     }
 
+    public function testGetSectionsAsObject()
+    {
+        $secs = $this->api->getLibrarySections(true);
+        $this->assertIsArray($secs);
+        $this->assertIsObject($secs[0]);
+        $this->assertInstanceOf(Section::class, $secs[0]);
+    }
+
     public function testGetMovieLibrarySectionContents()
     {
         if (!$this->runMovieTests) {
@@ -317,6 +326,19 @@ class TestPlexApi extends TestCase
         $res = $this->api->getLibrarySectionContents($_ENV['MOVIE_SECTION_KEY'], true);
         $this->assertInstanceOf(ItemCollection::class, $res);
         $this->assertGreaterThan(0, $res->count());
+    }
+
+    public function testGetMovieCollectionSize()
+    {
+        if (!$this->runMovieTests) {
+            $this->markTestSkipped(self::MOVIE_OFF_MSG);
+            return;
+        }
+
+        $filter = new Filter('title', $_ENV['MOVIE_FILTER_QUERY']);
+        $res = $this->api->filter($_ENV['MOVIE_SECTION_KEY'], [$filter], true);
+        
+        $this->assertEquals($_ENV['MOVIE_FILTER_QUERY_SIZE'], $res->size()->bytes());
     }
 
     public function testGetMetadata()

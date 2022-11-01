@@ -172,7 +172,7 @@ class Episode implements Item, JsonSerializable
         }
 
         if (isset($lib['Writer']) && is_array($lib['Writer'])) {
-            if (count($lib['Writer']) == 1) {
+            if (isset($lib['Writer']['tag'])) {
                 $me->data['writer'][] = $lib['Writer']['tag'];
             } else {
                 foreach ($lib['Writer'] as $w) {
@@ -183,7 +183,7 @@ class Episode implements Item, JsonSerializable
         }
 
         if (isset($lib['Role']) && is_array($lib['Role'])) {
-            if (count($lib['Role']) == 1) {
+            if (isset($lib['Role']['tag'])) {
                 $me->data['role'][] = $lib['Role']['tag'];
             } else {
                 foreach ($lib['Role'] as $r) {

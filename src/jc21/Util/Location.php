@@ -6,6 +6,9 @@ use JsonSerializable;
 
 /**
  * Object to store Location info
+ *
+ * @property int $id
+ * @property string $path
  */
 class Location implements JsonSerializable
 {

@@ -43,7 +43,7 @@ class Filter
             throw new Exception("Invalid filter operator");
         }
 
-        if (!in_array($field, ['title', 'rating', 'contentRating', 'year', 'studio'])) {
+        if (!in_array($field, ['title', 'rating', 'contentRating', 'year', 'studio', 'resolution'])) {
             throw new Exception("Invalid filter field");
         }
 

@@ -254,11 +254,23 @@ class PlexApi
     /**
      * Get Library Sections ie Movies, TV Shows etc
      *
+     * @param bool $returnObjects
+     *
      * @return array|bool
      */
-    public function getLibrarySections()
+    public function getLibrarySections(bool $returnObjects = false)
     {
-        return $this->call('/library/sections');
+        $res = $this->call('/library/sections');
+        if (!$returnObjects): return $res;
+        endif;
+
+        $ret = [];
+        foreach ($res['Directory'] as $s) {
+            $sec = Section::fromLibrary($s);
+            $ret[] = $sec;
+        }
+
+        return $ret;
     }
 
     /**

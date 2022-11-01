@@ -2,7 +2,7 @@
 
 ### Main Class
 
-[PlexApi](PlexApi.md)<br />
+[PlexApi](PlexApi.md)
 
 ### Collection Classes
 
@@ -11,13 +11,16 @@
 
 ### Media Classes
 
-[Movie](Movie.md)<br />
-[Show](Show.md)<br />
-[Season](Season.md)<br />
-[Episode](Episode.md)<br />
-[Artist](Artist.md)<br />
-[Album](Album.md)<br />
-[Track](Track.md)<br />
+- Movie
+  - [Movie](Movie.md)<br />
+- TV
+  - [Show](Show.md)<br />
+  - [Season](Season.md)<br />
+  - [Episode](Episode.md)<br />
+- Music
+  - [Artist](Artist.md)<br />
+  - [Album](Album.md)<br />
+  - [Track](Track.md)<br />
 
 ### Utility Classes
 

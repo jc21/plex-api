@@ -5,6 +5,7 @@ namespace jc21\Music;
 use DateTime;
 use Exception;
 use JsonSerializable;
+use jc21\Collections\ItemCollection;
 use jc21\Util\Item;
 
 /**
@@ -49,16 +50,16 @@ class Album implements Item, JsonSerializable
     /**
      * Array to store track data
      *
-     * @var array
+     * @var ItemCollection
      */
-    private array $tracks;
+    private ItemCollection $tracks;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->tracks = [];
+        $this->tracks = new ItemCollection();
     }
 
     /**
@@ -88,13 +89,23 @@ class Album implements Item, JsonSerializable
     }
 
     /**
+     * Method to retrieve tracks on this album
+     * 
+     * @return ItemCollection
+     */
+    public function getChildren(): ItemCollection
+    {
+        return $this->tracks;
+    }
+
+    /**
      * Add a track to the library
      *
      * @param Track $t
      */
     public function addTrack(Track $t)
     {
-        $this->tracks[] = $t;
+        $this->tracks->addData($t);
     }
 
     /**

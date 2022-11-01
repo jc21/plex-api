@@ -40,5 +40,6 @@ The object to represent a music album
 | public        | <strong>__construct()</strong>: <em>void</em><br />                                                                                      |
 | public        | <strong>__get(</strong><em>string</em> <strong>$var)</strong>: <em>mixed</em><br />Magic getter                                          |
 | public        | <strong>__set(</strong><em>string</em> <strong>\$var</strong>, <em>mixed</em> <strong>$val)</strong>: <em>void</em><br />Magic setter    |
+| public | <strong>getChildren()</strong>: <em>ItemCollection:Track</em><br />Method to retrieve collection of tracks on this album |
 | public        | <strong>addTrack(</strong><em>Track</em> <strong>$a)</strong>: <em>void</em>                                                             |
 | public static | <strong>fromLibrary(</strong><em>array</em> <strong>$library)</strong>: <em>Album</em><br />Create a Album from the Plex API call return |

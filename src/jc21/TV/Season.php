@@ -3,9 +3,9 @@
 namespace jc21\TV;
 
 use DateTime;
-use jc21\PlexApi;
 use JsonSerializable;
-use TypeError;
+use jc21\Collections\ItemCollection;
+use jc21\PlexApi;
 
 /**
  * To represent a season of a TV Show
@@ -45,9 +45,9 @@ class Season implements JsonSerializable
     /**
      * Array to store episodes of a show in a season
      *
-     * @var array:Episode
+     * @var ItemCollection
      */
-    private array $episodes;
+    private ItemCollection $episodes;
 
     /**
      * Constructor
@@ -109,9 +109,9 @@ class Season implements JsonSerializable
     /**
      * Method to return the episodes
      *
-     * @return array
+     * @return ItemCollection
      */
-    public function getEpisodes(): array
+    public function getChildren(): ItemCollection
     {
         return $this->episodes;
     }

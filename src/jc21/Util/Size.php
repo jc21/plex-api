@@ -25,6 +25,16 @@ class Size
     }
 
     /**
+     * Returns the size in TB
+     * 
+     * @return string
+     */
+    public function TB()
+    {
+        return number_format($this->size / 1024 / 1024 / 1024 / 1024, 3);
+    }
+
+    /**
      * Return the size in GB
      *
      * @return string

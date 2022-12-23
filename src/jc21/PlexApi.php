@@ -549,6 +549,9 @@ class PlexApi
     {
         if (!$this->token && !$isLoginCall) {
             $this->call('https://plex.tv/users/sign_in.xml', [], self::POST, true);
+            if (!$this->token) {
+                return false;
+            }
         }
 
         if ($isLoginCall) {

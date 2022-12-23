@@ -10,6 +10,7 @@ use jc21\Music\Track;
 use jc21\TV\Show;
 use jc21\TV\Season;
 use jc21\TV\Episode;
+use jc21\Util\Item;
 
 /**
  * Plex API Class - Communicate with your Plex Media Server.
@@ -355,12 +356,24 @@ class PlexApi
         $res = $this->call('/library/metadata/' . (int) $item);
         if (!$returnObject): return $res;
         endif;
-        
+
         $tag = (isset($res['Video']) ? 'Video' : null);
         $tag = (isset($res['Directory']) ? 'Directory' : $tag);
 
         $ret = $this->array2object($res[$tag]);
         return $ret;
+    }
+
+
+    /**
+     * Method for getting the artwork for a item
+     *
+     * @param Item $i
+     * @param string $tag
+     */
+    public function getArtwork(Item $i, string $tag)
+    {
+        return $this->call($i->{$tag}, ['art' => true]);
     }
 
 
@@ -596,6 +609,12 @@ class PlexApi
         // Stats
         $this->lastCallStats = curl_getinfo($resource);
 
+        // Return if we are getting binary artwork data
+        if (isset($params['art']) && $params['art'] && $response !== false) {
+            curl_close($resource);
+            return $response;
+        }
+
         // Errors and redirect failures
         if (!$response) {
             $response        = false;
@@ -636,7 +655,7 @@ class PlexApi
             }
             return substr($ret, 0, -1);
         }
-        
+
         return http_build_query($query);
     }
 
@@ -669,14 +688,14 @@ class PlexApi
         if (!isset($array[0])) {
             $array[0] = $array;
         }
-        
+
         foreach ($array as $a) {
             if (!is_array($a) || !isset($a['type'])) {
                 continue;
             }
 
             $i = self::array2object($a);
-            
+
             if (is_null($i)) {
                 continue;
             }

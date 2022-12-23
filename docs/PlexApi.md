@@ -11,6 +11,7 @@
 | public | <strong>getLibrarySections()</strong> : <em>array\|bool</em><br /><em>Get Library Sections ie Movies, TV Shows etc</em> |
 | public | <strong>getLibrarySectionContents(</strong><em>int</em> <strong>$sectionKey</strong>, <em>bool</em> <strong>$returnCollection = `false`)</strong> : <em>array\|ItemCollection\|bool</em><br /><em>Get Library Section contents</em> |
 | public | <strong>getMetadata(</strong><em>int</em> <strong>$item</strong>)</strong> : <em>array\|bool</em><br /><em>Get Metadata for an Item</em> |
+| public | <strong>getArtwork(</strong><em>Movie</em> <strong>$item</strong>, <em>string</em> <strong>$tag</strong>) : <em>string</em><br /><em>Get binary data for artwork, can store as `jpg` at return</em> |
 | public | <strong>getOnDeck(</strong><em>bool</em> <strong>$returnCollection = `false`)</strong> : <em>array\|ItemCollection\|bool</em><br /><em>Get On Deck Info</em> |
 | public | <strong>getRecentlyAdded(</strong><em>bool</em> <strong>$returnCollection = `false`)</strong> : <em>array\|ItemCollection\|bool</em><br /><em>Get Recently Added</em> |
 | public | <strong>getServers()</strong> : <em>array\|bool</em><br /><em>Get Servers</em> |

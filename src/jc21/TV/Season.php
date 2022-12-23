@@ -77,7 +77,7 @@ class Season implements JsonSerializable
             'addedAt' => null,
             'updatedAt' => null,
         ];
-        $this->episodes = [];
+        $this->episodes = new ItemCollection();
     }
 
     /**
@@ -123,7 +123,7 @@ class Season implements JsonSerializable
      */
     public function addEpisode(Episode $e)
     {
-        $this->episodes[$e->index] = $e;
+        $this->episodes->addData($e);
     }
 
     /**

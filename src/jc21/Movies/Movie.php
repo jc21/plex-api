@@ -78,7 +78,7 @@ class Movie implements JsonSerializable, Item
             'updatedAt' => null,
             'audienceRatingImage' => null,
             'primaryExtraKey' => null,
-            'media' => new Media(),
+            'media' => null,
             'genre' => [],
             'director' => [],
             'writer' => [],
@@ -126,7 +126,9 @@ class Movie implements JsonSerializable, Item
         $me = new static();
         $me->data = $library;
 
-        $me->data['duration'] = new Duration($library['duration']);
+        if (isset($library['duration'])) {
+            $me->duration = new Duration($library['duration']);
+        }
 
         if (isset($library['lastViewedAt'])) {
             $lastViewedAt = new DateTime();
@@ -137,7 +139,7 @@ class Movie implements JsonSerializable, Item
         $addedAt = new DateTime();
         $addedAt->setTimestamp($library['addedAt']);
         $me->addedAt = $addedAt;
-        
+
         $updatedAt = new DateTime();
         $updatedAt->setTimestamp($library['updatedAt']);
         $me->updatedAt = $updatedAt;
@@ -191,8 +193,17 @@ class Movie implements JsonSerializable, Item
         }
 
         if (isset($library['Media'])) {
-            $media = Media::fromLibrary($library['Media']);
-            $me->media = $media;
+            if (isset($library['Media'][0])) {
+                $arr = [];
+                foreach ($library['Media'] as $m) {
+                    $media = Media::fromLibrary($m);
+                    $arr[] = $media;
+                }
+                $me->media = $arr;
+            } else {
+                $media = Media::fromLibrary($library['Media']);
+                $me->media = $media;
+            }
             unset($me->data['Media']);
         }
 

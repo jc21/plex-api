@@ -14,18 +14,23 @@
             "email": "jc@jc21.com"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
         "php": ">=7.4",
         "ext-curl": "*"
     },
     "require-dev": {
-        "victorjonsson/markdowndocs": "dev-master",
-        "symfony/dotenv": "6.2.x-dev"
+        "symfony/dotenv": "6.2.x-dev",
+        "phpunit/phpunit": "^9"
     },
     "autoload": {
         "psr-0": {
             "jc21": "src"
         }
+    },
+    "scripts": {
+        "test": "php vendor/bin/phpunit",
+        "sections": "php tests/SectionList.php",
+        "items": "php tests/ItemList.php"
     }
 }

@@ -2,7 +2,7 @@
 
 ### Main Class
 
-[PlexApi](PlexApi.md)<br />
+[PlexApi](PlexApi.md)
 
 ### Collection Classes
 
@@ -11,10 +11,16 @@
 
 ### Media Classes
 
-[Movie](Movie.md)<br />
-[Show](Show.md)<br />
-[Season](Season.md)<br />
-[Episode](Episode.md)<br />
+- Movie
+  - [Movie](Movie.md)<br />
+- TV
+  - [Show](Show.md)<br />
+  - [Season](Season.md)<br />
+  - [Episode](Episode.md)<br />
+- Music
+  - [Artist](Artist.md)<br />
+  - [Album](Album.md)<br />
+  - [Track](Track.md)<br />
 
 ### Utility Classes
 
@@ -25,6 +31,10 @@ Item - only present for inheritance and `ItemCollection`<br />
 [Media](Media.md)<br />
 [Size](Size.md)<br />
 [Section](Section.md)
+
+### Dev Testing
+
+[Tests](Tests.md)
 
 <hr />
 

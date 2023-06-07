@@ -26,7 +26,7 @@ This represents a single season within a show
 | int | viewedLeafCount | The number of times an episode in this season was viewed |
 | `DateTime` | addedAt | The date and time this season was added to the library |
 | `DateTime` | updatedAt | The date and time this season was last updated in the library |
-| array:[Episode](Episode.md) | episodes | An array to store all the episodes in this season |
+| `ItemCollection`:`Episode`(Episode.md) | episodes | An array to store all the episodes in this season |
 
 ## Function List
 
@@ -35,6 +35,6 @@ This represents a single season within a show
 | public | <strong>__construct()</strong>: <em>void</em><br /> |
 | public | <strong>__get(</strong><em>string</em> <strong>$var)</strong>: <em>mixed</em><br />Magic getter |
 | public | <strong>__set(</strong><em>string</em> <strong>$var</strong>, <em>mixed</em> <strong>$val)</strong>: <em>void</em><br />Magic setter |
-| public | <strong>getEpisodes()</strong>: <em>array:Episodes</em><br />Method to get all episodes within this season |
+| public | <strong>getChildren()</strong>: <em>ItemCollection:Episodes</em><br />Method to get all episodes within this season |
 | public | <strong>addEpisode(</strong><em>Episode</em> <strong>$episode)</strong>: <em>void</em><br />Method to add an episode to the season |
 | public static | <strong>fromLibrary(</strong><em>array</em> <strong>$lib)</strong>: <em>Season</em><br />Method to create a season |

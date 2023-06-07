@@ -4,7 +4,12 @@ namespace jc21;
 
 use jc21\Collections\ItemCollection;
 use jc21\Movies\Movie;
+use jc21\Music\Artist;
+use jc21\Music\Album;
+use jc21\Music\Track;
 use jc21\TV\Show;
+use jc21\TV\Season;
+use jc21\TV\Episode;
 use jc21\Util\Item;
 
 /**
@@ -12,7 +17,7 @@ use jc21\Util\Item;
  *
  * @license BSD
  * @author  Jamie Curnow  <jc@jc21.com>
- * @version 1.3
+ * @version 2.1
  *
  * @example
  * <code>
@@ -26,7 +31,7 @@ use jc21\Util\Item;
 
 class PlexApi
 {
-    public const VERSION = '1.3';
+    public const VERSION = '2.1';
 
     const GET    = 'GET';
     const POST   = 'POST';
@@ -36,6 +41,7 @@ class PlexApi
     // Plex agents
     public const PLEX_AGENT_NONE = 'com.plexapp.agents.none';
     public const PLEX_MOVIE_AGENT = 'tv.plex.agents.movie';
+    public const PLEX_IMDB_MOVIE_AGENT = 'com.plexapp.agents.imdb';
     public const PLEX_TV_AGENT = 'tv.plex.agents.series';
     public const PLEX_MUSIC_AGENT = 'tv.plex.agents.music';
 
@@ -221,6 +227,15 @@ class PlexApi
         return $this->call('/transcode/sessions');
     }
 
+    /**
+     * Method to get plex account data
+     *
+     * @return array|bool
+     */
+    public function getAccount()
+    {
+        return $this->call('/myplex/account');
+    }
 
     /**
      * Get On Deck Info
@@ -233,27 +248,30 @@ class PlexApi
     {
         $results = $this->call('/library/onDeck');
 
-        if (is_bool($results)) {
-            return $results;
-        }
-
-        $tag = 'Video';
-        if (!isset($results[$tag]) && isset($results['Directory'])) {
-            $tag = 'Directory';
-        }
-
-        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+        return $this->checkResults($results, $returnCollection);
     }
 
 
     /**
      * Get Library Sections ie Movies, TV Shows etc
      *
+     * @param bool $returnObjects
+     *
      * @return array|bool
      */
-    public function getLibrarySections()
+    public function getLibrarySections(bool $returnObjects = false)
     {
-        return $this->call('/library/sections');
+        $res = $this->call('/library/sections');
+        if (!$returnObjects): return $res;
+        endif;
+
+        $ret = [];
+        foreach ($res['Directory'] as $s) {
+            $sec = Section::fromLibrary($s);
+            $ret[] = $sec;
+        }
+
+        return $ret;
     }
 
     /**
@@ -268,16 +286,7 @@ class PlexApi
     {
         $results = $this->call('/library/sections/' . $sectionKey . '/all');
 
-        if (is_bool($results)) {
-            return $results;
-        }
-
-        $tag = 'Video';
-        if (!isset($results[$tag]) && isset($results['Directory'])) {
-            $tag = 'Directory';
-        }
-
-        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+        return $this->checkResults($results, $returnCollection);
     }
 
 
@@ -331,16 +340,7 @@ class PlexApi
     {
         $results = $this->call('/library/recentlyAdded');
 
-        if (is_bool($results)) {
-            return $results;
-        }
-
-        $tag = 'Video';
-        if (!isset($results[$tag]) && isset($results['Directory'])) {
-            $tag = 'Directory';
-        }
-
-        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+        return $this->checkResults($results, $returnCollection);
     }
 
 
@@ -348,11 +348,32 @@ class PlexApi
      * Get Metadata for an Item
      *
      * @param  int   $item
-     * @return array|bool
+     * @param  bool  $returnObject
+     * @return array|bool|object
      */
-    public function getMetadata($item)
+    public function getMetadata($item, bool $returnObject = false)
     {
-        return $this->call('/library/metadata/' . (int) $item);
+        $res = $this->call('/library/metadata/' . (int) $item);
+        if (!$returnObject): return $res;
+        endif;
+
+        $tag = (isset($res['Video']) ? 'Video' : null);
+        $tag = (isset($res['Directory']) ? 'Directory' : $tag);
+
+        $ret = $this->array2object($res[$tag]);
+        return $ret;
+    }
+
+
+    /**
+     * Method for getting the artwork for a item
+     *
+     * @param Item $i
+     * @param string $tag
+     */
+    public function getArtwork(Item $i, string $tag)
+    {
+        return $this->call($i->{$tag}, ['art' => true]);
     }
 
 
@@ -368,16 +389,7 @@ class PlexApi
     {
         $results = $this->call('/search', ['query' => $query]);
 
-        if (is_bool($results)) {
-            return $results;
-        }
-
-        $tag = 'Video';
-        if (!isset($results[$tag]) && isset($results['Directory'])) {
-            $tag = 'Directory';
-        }
-
-        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+        return $this->checkResults($results, $returnCollection);
     }
 
     /**
@@ -393,16 +405,7 @@ class PlexApi
     {
         $results = $this->call("/library/sections/{$sectionKey}/all", $filter);
 
-        if (is_bool($results)) {
-            return $results;
-        }
-
-        $tag = 'Video';
-        if (!isset($results[$tag]) && isset($results['Directory'])) {
-            $tag = 'Directory';
-        }
-
-        return ($returnCollection ? $this->array2collection($results[$tag]) : $results);
+        return $this->checkResults($results, $returnCollection);
     }
 
     /**
@@ -546,6 +549,9 @@ class PlexApi
     {
         if (!$this->token && !$isLoginCall) {
             $this->call('https://plex.tv/users/sign_in.xml', [], self::POST, true);
+            if (!$this->token) {
+                return false;
+            }
         }
 
         if ($isLoginCall) {
@@ -606,6 +612,12 @@ class PlexApi
         // Stats
         $this->lastCallStats = curl_getinfo($resource);
 
+        // Return if we are getting binary artwork data
+        if (isset($params['art']) && $params['art'] && $response !== false) {
+            curl_close($resource);
+            return $response;
+        }
+
         // Errors and redirect failures
         if (!$response) {
             $response        = false;
@@ -646,7 +658,7 @@ class PlexApi
             }
             return substr($ret, 0, -1);
         }
-        
+
         return http_build_query($query);
     }
 
@@ -679,22 +691,55 @@ class PlexApi
         if (!isset($array[0])) {
             $array[0] = $array;
         }
-        
+
         foreach ($array as $a) {
             if (!is_array($a) || !isset($a['type'])) {
                 continue;
             }
 
-            if ($a['type'] == 'movie') {
-                $i = Movie::fromLibrary($a);
-            } elseif ($a['type'] == 'show') {
-                $i = Show::fromLibrary($a);
-            } else {
+            $i = self::array2object($a);
+
+            if (is_null($i)) {
                 continue;
             }
+
             $ic->addData($i);
         }
         return $ic;
+    }
+
+    /**
+     * Method to convert a returned array from the API to an specific object
+     *
+     * @param array $arr
+     *
+     * @return Show|Season|Episode|Artist|Album|Track|Movie
+     */
+    public static function array2object(array $arr)
+    {
+        if (!isset($arr['type'])) {
+            return null;
+        }
+
+        $ns = "jc21\\";
+        if (in_array($arr['type'], ['show', 'season', 'episode'])) {
+            $ns .= "TV\\";
+        } elseif (in_array($arr['type'], ['artist', 'album', 'track'])) {
+            $ns .= "Music\\";
+        } elseif ($arr['type'] == 'movie') {
+            $ns .= "Movies\\";
+        }
+
+        if ($ns == "jc21\\") {
+            return null;
+        }
+
+        $class = $ns.ucfirst($arr['type'])."::fromLibrary";
+        if (!method_exists($ns.ucfirst($arr['type']), "fromLibrary")) {
+            return null;
+        }
+        $ret = $class($arr);
+        return $ret;
     }
 
     /**
@@ -722,5 +767,27 @@ class PlexApi
         } else {
             $result = $data;
         }
+    }
+
+    /**
+     * Method to check the results for what is expected
+     *
+     * @param array $results
+     * @param bool $returnCollection
+     *
+     * @return ItemCollection|bool|array
+     */
+    private function checkResults($results, bool $returnCollection)
+    {
+        if (is_bool($results) || !$returnCollection): return $results;
+        endif;
+
+        $tag = (isset($results['Video']) ? 'Video' : null);
+        $tag = (isset($results['Directory']) ? 'Directory' : $tag);
+
+        if (is_null($tag)): return false;
+        endif;
+
+        return $this->array2collection($results[$tag]);
     }
 }

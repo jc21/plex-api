@@ -34,7 +34,7 @@ A TV Show
 | string | audienceRatingImage |  |
 | array:string | genre | The genres the show is in |
 | array:string | role | The actor/actresses in the show |
-| array:[Season](Season.md) | seasons | The array containing all the seasons |
+| `ItemCollection`:`Season`(Season.md) | seasons | The array containing all the seasons |
 
 ## Function List
 
@@ -43,6 +43,6 @@ A TV Show
 | public | <strong>__construct()</strong>: <em>void</em><br /> |
 | public | <strong>__get(</strong><em>string</em> <strong>$var)</strong>: <em>mixed</em><br />Magic getter |
 | public | <strong>__set(</strong><em>string</em> <strong>$var</strong>, <em>mixed</em> <strong>$val)</strong>: <em>void</em><br />Magic setter |
-| public | <strong>getSeasons()</strong>: <em>array:Season</em><br />Method to get the seasons |
+| public | <strong>getChildren()</strong>: <em>array:Season</em><br />Method to get the seasons |
 | public | <strong>addSeason(</strong><em>Season</em> <strong>$season)</strong>: <em>bool</em><br />Method to add a season to the show |
 | public static | <strong>fromLibrary(</strong><em>array</em> <strong>$lib)</strong>: <em>Show</em><br />Method to create a show from the Plex API call |

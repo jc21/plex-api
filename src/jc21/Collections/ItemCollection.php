@@ -8,6 +8,7 @@ use jc21\Util\Item;
 use jc21\Movies\Movie;
 use jc21\TV\Show;
 use jc21\Iterators\ItemIterator;
+use jc21\Util\Size;
 
 /**
  * Collection to store Items
@@ -40,11 +41,31 @@ class ItemCollection implements IteratorAggregate
     }
 
     /**
+     * Get the size of the media in the collection
+     * 
+     * @return Size
+     */
+    public function size(): Size
+    {
+        $int = 0;
+        foreach ($this->collection as $item) {
+            if (method_exists($item, 'getChildren')) {
+                $item->getChildren()->size();
+            }
+            /** @var Movie|Episode|Track $item */
+            $int += (int) $item->media->size->bytes();
+        }
+        $size = new Size($int);        
+
+        return $size;
+    }
+
+    /**
      * Method to get data at a position
      *
      * @param int $position
      *
-     * @return null|Movie|Show
+     * @return null|Movie|Show|Season|Episode|Artist|Album|Track
      */
     public function getData(int $position = 0)
     {
@@ -57,6 +78,8 @@ class ItemCollection implements IteratorAggregate
 
     /**
      * Method to add a Item to the collection
+     *
+     * @param Item $Item
      */
     public function addData(Item $Item)
     {

@@ -2,4 +2,5 @@
 .idea
 vendor
 composer.lock
-.env
+*.env
+*.cache

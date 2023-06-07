@@ -6,6 +6,9 @@ use JsonSerializable;
 
 /**
  * Object to store Location info
+ *
+ * @property int $id
+ * @property string $path
  */
 class Location implements JsonSerializable
 {
@@ -53,7 +56,7 @@ class Location implements JsonSerializable
      *
      * @return mixed
      */
-    public function jsonSerialize(): mixed
+    public function jsonSerialize()
     {
         return $this->data;
     }
